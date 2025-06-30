@@ -1,3 +1,14 @@
+# Stop current server (Ctrl+C)
+
+# 1. Completely recreate database
+dropdb -U postgres rebbies_store_db
+createdb -U postgres rebbies_store_db
+
+# 2. Clean everything
+rm -rf dist .medusa
+
+# 3. Create ultra-minimal config
+cat > medusa-config.js << 'EOF'
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -22,3 +33,10 @@ module.exports = {
     cacheService: { resolve: "@medusajs/cache-inmemory" },
   },
 };
+EOF
+
+# 4. Run migrations on fresh database
+npx medusa migrations run
+
+# 5. Start server
+npm run dev

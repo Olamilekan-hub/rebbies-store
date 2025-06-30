@@ -1,8 +1,12 @@
-import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
+import type { MedusaRequest, MedusaResponse } from "@medusajs/medusa"
 
 export async function GET(
   req: MedusaRequest,
   res: MedusaResponse
-) {
-  res.sendStatus(200);
+): Promise<void> {
+  res.json({
+    message: "Store custom endpoint working!",
+    store: "Rebbie's Store",
+    location: "Nigeria"
+  })
 }
