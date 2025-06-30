@@ -1,0 +1,514 @@
+{
+  "store": {
+    "name": "Rebbie's Store",
+    "swap_link_template": "https://rebbies-store.com/swap={swap_id}",
+    "payment_link_template": "https://rebbies-store.com/payment={payment_id}",
+    "invite_link_template": "https://rebbies-store.com/invite?token={invite_token}",
+    "default_currency_code": "ngn",
+    "currencies": ["ngn", "usd"],
+    "default_sales_channel_id": null
+  },
+  "regions": [
+    {
+      "id": "reg_nigeria",
+      "name": "Nigeria",
+      "currency_code": "ngn",
+      "tax_rate": 0,
+      "payment_providers": [
+        "manual",
+        "paystack"
+      ],
+      "fulfillment_providers": [
+        "manual"
+      ],
+      "countries": ["ng"]
+    },
+    {
+      "id": "reg_international",
+      "name": "International",
+      "currency_code": "usd", 
+      "tax_rate": 0,
+      "payment_providers": [
+        "manual"
+      ],
+      "fulfillment_providers": [
+        "manual"
+      ],
+      "countries": ["us", "gb", "ca", "au"]
+    }
+  ],
+  "shipping_options": [
+    {
+      "name": "Lagos Same Day",
+      "region_id": "reg_nigeria",
+      "provider_id": "manual",
+      "profile_id": "default_shipping_profile",
+      "price_type": "flat_rate",
+      "amount": 200000,
+      "is_return": false,
+      "data": {
+        "id": "manual-fulfillment"
+      }
+    },
+    {
+      "name": "Nigeria Standard (2-5 days)",
+      "region_id": "reg_nigeria", 
+      "provider_id": "manual",
+      "profile_id": "default_shipping_profile",
+      "price_type": "flat_rate",
+      "amount": 150000,
+      "is_return": false,
+      "data": {
+        "id": "manual-fulfillment"
+      }
+    },
+    {
+      "name": "International Shipping",
+      "region_id": "reg_international",
+      "provider_id": "manual", 
+      "profile_id": "default_shipping_profile",
+      "price_type": "flat_rate",
+      "amount": 5000,
+      "is_return": false,
+      "data": {
+        "id": "manual-fulfillment"
+      }
+    }
+  ],
+  "products": [
+    {
+      "title": "Brazilian Deep Wave Hair Bundle",
+      "subtitle": "Premium quality deep wave hair extensions",
+      "description": "100% human hair deep wave bundles sourced from Brazil. Perfect for creating voluminous, bouncy curls that last. Ideal for Nigerian hairstyles and can be colored, straightened, or styled to your preference.",
+      "handle": "brazilian-deep-wave-hair-bundle",
+      "is_giftcard": false,
+      "weight": 100,
+      "images": [
+        "https://example.com/images/brazilian-deep-wave-1.jpg",
+        "https://example.com/images/brazilian-deep-wave-2.jpg"
+      ],
+      "options": [
+        {
+          "title": "Length",
+          "values": ["12 inches", "14 inches", "16 inches", "18 inches", "20 inches", "22 inches", "24 inches"]
+        },
+        {
+          "title": "Color",
+          "values": ["Natural Black", "Dark Brown", "Medium Brown", "Light Brown"]
+        }
+      ],
+      "variants": [
+        {
+          "title": "12 inches / Natural Black",
+          "sku": "BDW-12-NB",
+          "inventory_quantity": 50,
+          "manage_inventory": true,
+          "prices": [
+            {
+              "currency_code": "ngn",
+              "amount": 2500000
+            },
+            {
+              "currency_code": "usd", 
+              "amount": 6000
+            }
+          ],
+          "options": [
+            {
+              "value": "12 inches"
+            },
+            {
+              "value": "Natural Black"
+            }
+          ]
+        },
+        {
+          "title": "16 inches / Natural Black",
+          "sku": "BDW-16-NB",
+          "inventory_quantity": 45,
+          "manage_inventory": true,
+          "prices": [
+            {
+              "currency_code": "ngn",
+              "amount": 3500000
+            },
+            {
+              "currency_code": "usd",
+              "amount": 8500
+            }
+          ],
+          "options": [
+            {
+              "value": "16 inches"
+            },
+            {
+              "value": "Natural Black"
+            }
+          ]
+        },
+        {
+          "title": "20 inches / Natural Black",
+          "sku": "BDW-20-NB", 
+          "inventory_quantity": 30,
+          "manage_inventory": true,
+          "prices": [
+            {
+              "currency_code": "ngn",
+              "amount": 4500000
+            },
+            {
+              "currency_code": "usd",
+              "amount": 11000
+            }
+          ],
+          "options": [
+            {
+              "value": "20 inches"
+            },
+            {
+              "value": "Natural Black"
+            }
+          ]
+        }
+      ],
+      "categories": [
+        {
+          "name": "Hair Extensions",
+          "handle": "hair-extensions"
+        },
+        {
+          "name": "Brazilian Hair",
+          "handle": "brazilian-hair"
+        }
+      ]
+    },
+    {
+      "title": "Peruvian Straight Hair Bundle",
+      "subtitle": "Silky smooth straight hair extensions",
+      "description": "Premium Peruvian straight hair bundles that are soft, silky, and tangle-free. Perfect for sleek Nigerian hairstyles. Can be curled, waved, or maintained straight. Lasts 12+ months with proper care.",
+      "handle": "peruvian-straight-hair-bundle",
+      "is_giftcard": false,
+      "weight": 100,
+      "images": [
+        "https://example.com/images/peruvian-straight-1.jpg",
+        "https://example.com/images/peruvian-straight-2.jpg"
+      ],
+      "options": [
+        {
+          "title": "Length",
+          "values": ["12 inches", "14 inches", "16 inches", "18 inches", "20 inches", "22 inches"]
+        },
+        {
+          "title": "Color", 
+          "values": ["Natural Black", "Dark Brown"]
+        }
+      ],
+      "variants": [
+        {
+          "title": "14 inches / Natural Black",
+          "sku": "PS-14-NB",
+          "inventory_quantity": 40,
+          "manage_inventory": true,
+          "prices": [
+            {
+              "currency_code": "ngn",
+              "amount": 2800000
+            },
+            {
+              "currency_code": "usd",
+              "amount": 6800
+            }
+          ],
+          "options": [
+            {
+              "value": "14 inches"
+            },
+            {
+              "value": "Natural Black"
+            }
+          ]
+        },
+        {
+          "title": "18 inches / Natural Black",
+          "sku": "PS-18-NB",
+          "inventory_quantity": 35,
+          "manage_inventory": true,
+          "prices": [
+            {
+              "currency_code": "ngn", 
+              "amount": 3800000
+            },
+            {
+              "currency_code": "usd",
+              "amount": 9200
+            }
+          ],
+          "options": [
+            {
+              "value": "18 inches"
+            },
+            {
+              "value": "Natural Black"
+            }
+          ]
+        }
+      ],
+      "categories": [
+        {
+          "name": "Hair Extensions",
+          "handle": "hair-extensions"
+        },
+        {
+          "name": "Peruvian Hair", 
+          "handle": "peruvian-hair"
+        }
+      ]
+    },
+    {
+      "title": "Gold Plated Chain Necklace", 
+      "subtitle": "Elegant 18k gold plated necklace",
+      "description": "Beautiful 18k gold plated chain necklace perfect for everyday wear or special occasions. Hypoallergenic and water-resistant. Complements both traditional Nigerian attire and modern fashion.",
+      "handle": "gold-plated-chain-necklace",
+      "is_giftcard": false,
+      "weight": 50,
+      "images": [
+        "https://example.com/images/gold-chain-1.jpg",
+        "https://example.com/images/gold-chain-2.jpg"
+      ],
+      "options": [
+        {
+          "title": "Length",
+          "values": ["16 inches", "18 inches", "20 inches", "22 inches"]
+        },
+        {
+          "title": "Style",
+          "values": ["Cuban Link", "Rope Chain", "Box Chain", "Snake Chain"]
+        }
+      ],
+      "variants": [
+        {
+          "title": "18 inches / Cuban Link",
+          "sku": "GPC-18-CL",
+          "inventory_quantity": 25,
+          "manage_inventory": true,
+          "prices": [
+            {
+              "currency_code": "ngn",
+              "amount": 1500000
+            },
+            {
+              "currency_code": "usd",
+              "amount": 3600
+            }
+          ],
+          "options": [
+            {
+              "value": "18 inches"
+            },
+            {
+              "value": "Cuban Link"
+            }
+          ]
+        },
+        {
+          "title": "20 inches / Rope Chain",
+          "sku": "GPC-20-RC", 
+          "inventory_quantity": 20,
+          "manage_inventory": true,
+          "prices": [
+            {
+              "currency_code": "ngn",
+              "amount": 1800000
+            },
+            {
+              "currency_code": "usd",
+              "amount": 4300
+            }
+          ],
+          "options": [
+            {
+              "value": "20 inches"
+            },
+            {
+              "value": "Rope Chain"
+            }
+          ]
+        }
+      ],
+      "categories": [
+        {
+          "name": "Jewelry",
+          "handle": "jewelry"
+        },
+        {
+          "name": "Necklaces",
+          "handle": "necklaces"
+        }
+      ]
+    },
+    {
+      "title": "African Beaded Earrings",
+      "subtitle": "Traditional African beaded drop earrings",
+      "description": "Handcrafted African beaded earrings featuring traditional patterns and vibrant colors. Perfect for cultural events, parties, or adding an African touch to any outfit. Lightweight and comfortable for all-day wear.",
+      "handle": "african-beaded-earrings",
+      "is_giftcard": false,
+      "weight": 20,
+      "images": [
+        "https://example.com/images/african-earrings-1.jpg",
+        "https://example.com/images/african-earrings-2.jpg"
+      ],
+      "options": [
+        {
+          "title": "Color",
+          "values": ["Red & Gold", "Blue & White", "Green & Yellow", "Multi-color"]
+        },
+        {
+          "title": "Size",
+          "values": ["Small", "Medium", "Large"]
+        }
+      ],
+      "variants": [
+        {
+          "title": "Red & Gold / Medium",
+          "sku": "ABE-RG-M",
+          "inventory_quantity": 30,
+          "manage_inventory": true,
+          "prices": [
+            {
+              "currency_code": "ngn",
+              "amount": 500000
+            },
+            {
+              "currency_code": "usd",
+              "amount": 1200
+            }
+          ],
+          "options": [
+            {
+              "value": "Red & Gold"
+            },
+            {
+              "value": "Medium"
+            }
+          ]
+        },
+        {
+          "title": "Multi-color / Large",
+          "sku": "ABE-MC-L",
+          "inventory_quantity": 25,
+          "manage_inventory": true,
+          "prices": [
+            {
+              "currency_code": "ngn",
+              "amount": 700000
+            },
+            {
+              "currency_code": "usd",
+              "amount": 1700
+            }
+          ],
+          "options": [
+            {
+              "value": "Multi-color"
+            },
+            {
+              "value": "Large"
+            }
+          ]
+        }
+      ],
+      "categories": [
+        {
+          "name": "Jewelry",
+          "handle": "jewelry"
+        },
+        {
+          "name": "Earrings",
+          "handle": "earrings"
+        },
+        {
+          "name": "African Jewelry",
+          "handle": "african-jewelry"
+        }
+      ]
+    },
+    {
+      "title": "Sterling Silver Ring Set",
+      "subtitle": "Set of 3 adjustable sterling silver rings",
+      "description": "Elegant set of 3 sterling silver rings with different designs - one plain band, one with crystals, and one with traditional African patterns. Adjustable sizing fits most fingers. Perfect for stacking or wearing individually.",
+      "handle": "sterling-silver-ring-set",
+      "is_giftcard": false,
+      "weight": 30,
+      "images": [
+        "https://example.com/images/silver-ring-set-1.jpg",
+        "https://example.com/images/silver-ring-set-2.jpg"
+      ],
+      "options": [
+        {
+          "title": "Style",
+          "values": ["Classic Set", "Crystal Set", "African Pattern Set"]
+        }
+      ],
+      "variants": [
+        {
+          "title": "Classic Set",
+          "sku": "SSR-CS",
+          "inventory_quantity": 40,
+          "manage_inventory": true,
+          "prices": [
+            {
+              "currency_code": "ngn",
+              "amount": 1200000
+            },
+            {
+              "currency_code": "usd",
+              "amount": 2900
+            }
+          ],
+          "options": [
+            {
+              "value": "Classic Set"
+            }
+          ]
+        },
+        {
+          "title": "Crystal Set",
+          "sku": "SSR-CRS",
+          "inventory_quantity": 35,
+          "manage_inventory": true,
+          "prices": [
+            {
+              "currency_code": "ngn",
+              "amount": 1600000
+            },
+            {
+              "currency_code": "usd",
+              "amount": 3900
+            }
+          ],
+          "options": [
+            {
+              "value": "Crystal Set"
+            }
+          ]
+        }
+      ],
+      "categories": [
+        {
+          "name": "Jewelry",
+          "handle": "jewelry"
+        },
+        {
+          "name": "Rings",
+          "handle": "rings"
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "email": "admin@rebbies-store.com",
+      "password": "SecurePassword123!"
+    }
+  ]
+}
