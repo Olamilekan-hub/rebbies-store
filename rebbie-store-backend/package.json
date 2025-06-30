@@ -1,18 +1,18 @@
 {
-  "name": "rebbies-store-backend",
-  "version": "1.0.0",
-  "description": "Rebbie's Store - Hair & Jewelry E-commerce Backend (Nigeria-First)",
-  "author": "Olamilekan-hub (https://github.com/Olamilekan-hub)",
+  "name": "rebbie-store-backend",
+  "version": "0.0.1",
+  "description": "A starter for Medusa projects.",
+  "author": "Medusa (https://medusajs.com)",
   "license": "MIT",
   "keywords": [
+    "sqlite",
+    "postgres",
+    "typescript",
     "ecommerce",
-    "medusajs",
-    "nigeria",
-    "hair",
-    "jewelry",
-    "rebbie's store"
+    "headless",
+    "medusa"
   ],
-   "scripts": {
+  "scripts": {
     "build": "medusa build",
     "seed": "medusa exec ./src/scripts/seed.ts",
     "start": "medusa start",
@@ -31,7 +31,7 @@
     "@mikro-orm/migrations": "6.4.3",
     "@mikro-orm/postgresql": "6.4.3",
     "awilix": "^8.0.1",
-    "esbuild": "^0.25.5",
+    "esbuild": "^0.17.19",
     "pg": "^8.13.0"
   },
   "devDependencies": {
