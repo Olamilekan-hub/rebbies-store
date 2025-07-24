@@ -20,7 +20,7 @@ import {
   updateStoresWorkflow,
 } from "@medusajs/medusa/core-flows";
 
-export default async function seedDemoData({ container }: ExecArgs) {
+export default async function seedRebbieStoreData({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER);
   const link = container.resolve(ContainerRegistrationKeys.LINK);
   const query = container.resolve(ContainerRegistrationKeys.QUERY);
@@ -28,23 +28,24 @@ export default async function seedDemoData({ container }: ExecArgs) {
   const salesChannelModuleService = container.resolve(Modules.SALES_CHANNEL);
   const storeModuleService = container.resolve(Modules.STORE);
 
-  const countries = ["gb", "de", "dk", "se", "fr", "es", "it"];
+  // Nigerian focus with international support
+  const countries = ["ng", "us", "gb", "ca", "au", "gh", "za"];
 
-  logger.info("Seeding store data...");
+  logger.info("🏪 Setting up Rebbie's Store data...");
+  
   const [store] = await storeModuleService.listStores();
   let defaultSalesChannel = await salesChannelModuleService.listSalesChannels({
-    name: "Default Sales Channel",
+    name: "Rebbie's Store Sales Channel",
   });
 
   if (!defaultSalesChannel.length) {
-    // create the default sales channel
     const { result: salesChannelResult } = await createSalesChannelsWorkflow(
       container
     ).run({
       input: {
         salesChannelsData: [
           {
-            name: "Default Sales Channel",
+            name: "Rebbie's Store Sales Channel",
           },
         ],
       },
@@ -52,60 +53,72 @@ export default async function seedDemoData({ container }: ExecArgs) {
     defaultSalesChannel = salesChannelResult;
   }
 
+  // Update store with Nigerian Naira as primary currency
   await updateStoresWorkflow(container).run({
     input: {
       selector: { id: store.id },
       update: {
         supported_currencies: [
           {
-            currency_code: "eur",
+            currency_code: "ngn", // Nigerian Naira as primary
             is_default: true,
           },
           {
-            currency_code: "usd",
+            currency_code: "usd", // For diaspora customers
+          },
+          {
+            currency_code: "eur", // European customers
           },
         ],
         default_sales_channel_id: defaultSalesChannel[0].id,
       },
     },
   });
-  logger.info("Seeding region data...");
+
+  logger.info("🇳🇬 Creating Nigerian regions...");
   const { result: regionResult } = await createRegionsWorkflow(container).run({
     input: {
       regions: [
         {
-          name: "Europe",
-          currency_code: "eur",
-          countries,
+          name: "Nigeria",
+          currency_code: "ngn",
+          countries: ["ng"],
+          payment_providers: ["pp_system_default"], // Will add Paystack later
+        },
+        {
+          name: "International",
+          currency_code: "usd", 
+          countries: ["us", "gb", "ca", "au", "gh", "za"],
           payment_providers: ["pp_system_default"],
         },
       ],
     },
   });
-  const region = regionResult[0];
-  logger.info("Finished seeding regions.");
+  
+  const nigeriaRegion = regionResult.find(r => r.name === "Nigeria")!;
+  const internationalRegion = regionResult.find(r => r.name === "International")!;
 
-  logger.info("Seeding tax regions...");
+  logger.info("📊 Setting up tax regions...");
   await createTaxRegionsWorkflow(container).run({
     input: countries.map((country_code) => ({
       country_code,
       provider_id: "tp_system"
     })),
   });
-  logger.info("Finished seeding tax regions.");
 
-  logger.info("Seeding stock location data...");
+  logger.info("📍 Creating stock locations...");
   const { result: stockLocationResult } = await createStockLocationsWorkflow(
     container
   ).run({
     input: {
       locations: [
         {
-          name: "European Warehouse",
+          name: "Lagos Main Warehouse",
           address: {
-            city: "Copenhagen",
-            country_code: "DK",
-            address_1: "",
+            city: "Lagos",
+            country_code: "NG",
+            address_1: "Victoria Island",
+            province: "Lagos State",
           },
         },
       ],
@@ -122,11 +135,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
     },
   });
 
-  logger.info("Seeding fulfillment data...");
+  logger.info("🚚 Setting up Nigerian shipping...");
   const shippingProfiles = await fulfillmentModuleService.listShippingProfiles({
     type: "default"
-  })
-  let shippingProfile = shippingProfiles.length ? shippingProfiles[0] : null
+  });
+  let shippingProfile = shippingProfiles.length ? shippingProfiles[0] : null;
 
   if (!shippingProfile) {
     const { result: shippingProfileResult } =
@@ -134,7 +147,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
       input: {
         data: [
           {
-            name: "Default Shipping Profile",
+            name: "Rebbie's Store Shipping",
             type: "default",
           },
         ],
@@ -144,38 +157,31 @@ export default async function seedDemoData({ container }: ExecArgs) {
   }
 
   const fulfillmentSet = await fulfillmentModuleService.createFulfillmentSets({
-    name: "European Warehouse delivery",
+    name: "Nigeria & International Delivery",
     type: "shipping",
     service_zones: [
       {
-        name: "Europe",
+        name: "Lagos Zone",
         geo_zones: [
+          {
+            country_code: "ng",
+            type: "country",
+          },
+        ],
+      },
+      {
+        name: "International Zone",
+        geo_zones: [
+          {
+            country_code: "us",
+            type: "country",
+          },
           {
             country_code: "gb",
             type: "country",
           },
           {
-            country_code: "de",
-            type: "country",
-          },
-          {
-            country_code: "dk",
-            type: "country",
-          },
-          {
-            country_code: "se",
-            type: "country",
-          },
-          {
-            country_code: "fr",
-            type: "country",
-          },
-          {
-            country_code: "es",
-            type: "country",
-          },
-          {
-            country_code: "it",
+            country_code: "ca",
             type: "country",
           },
         ],
@@ -192,87 +198,98 @@ export default async function seedDemoData({ container }: ExecArgs) {
     },
   });
 
+  // Nigerian shipping options
   await createShippingOptionsWorkflow(container).run({
     input: [
       {
-        name: "Standard Shipping",
+        name: "Lagos Same Day Delivery",
+        price_type: "flat",
+        provider_id: "manual_manual",
+        service_zone_id: fulfillmentSet.service_zones[0].id,
+        shipping_profile_id: shippingProfile.id,
+        type: {
+          label: "Same Day",
+          description: "Lagos same-day delivery (before 6pm)",
+          code: "lagos-same-day",
+        },
+        prices: [
+          {
+            currency_code: "ngn",
+            amount: 250000, // ₦2,500
+          },
+          {
+            region_id: nigeriaRegion.id,
+            amount: 250000,
+          },
+        ],
+        rules: [
+          {
+            attribute: "enabled_in_store",
+            value: "true",
+            operator: "eq",
+          },
+        ],
+      },
+      {
+        name: "Nigeria Standard Delivery",
         price_type: "flat",
         provider_id: "manual_manual",
         service_zone_id: fulfillmentSet.service_zones[0].id,
         shipping_profile_id: shippingProfile.id,
         type: {
           label: "Standard",
-          description: "Ship in 2-3 days.",
-          code: "standard",
+          description: "2-5 business days nationwide",
+          code: "nigeria-standard",
         },
         prices: [
           {
-            currency_code: "usd",
-            amount: 10,
+            currency_code: "ngn",
+            amount: 150000, // ₦1,500
           },
           {
-            currency_code: "eur",
-            amount: 10,
-          },
-          {
-            region_id: region.id,
-            amount: 10,
+            region_id: nigeriaRegion.id,
+            amount: 150000,
           },
         ],
         rules: [
           {
             attribute: "enabled_in_store",
             value: "true",
-            operator: "eq",
-          },
-          {
-            attribute: "is_return",
-            value: "false",
             operator: "eq",
           },
         ],
       },
       {
-        name: "Express Shipping",
+        name: "International Shipping",
         price_type: "flat",
         provider_id: "manual_manual",
-        service_zone_id: fulfillmentSet.service_zones[0].id,
+        service_zone_id: fulfillmentSet.service_zones[1].id,
         shipping_profile_id: shippingProfile.id,
         type: {
-          label: "Express",
-          description: "Ship in 24 hours.",
-          code: "express",
+          label: "International",
+          description: "7-14 business days worldwide",
+          code: "international",
         },
         prices: [
           {
             currency_code: "usd",
-            amount: 10,
+            amount: 2500, // $25
           },
           {
-            currency_code: "eur",
-            amount: 10,
-          },
-          {
-            region_id: region.id,
-            amount: 10,
+            region_id: internationalRegion.id,  
+            amount: 2500,
           },
         ],
         rules: [
           {
             attribute: "enabled_in_store",
             value: "true",
-            operator: "eq",
-          },
-          {
-            attribute: "is_return",
-            value: "false",
             operator: "eq",
           },
         ],
       },
     ],
   });
-  logger.info("Finished seeding fulfillment data.");
 
   await linkSalesChannelsToStockLocationWorkflow(container).run({
     input: {
@@ -280,16 +297,15 @@ export default async function seedDemoData({ container }: ExecArgs) {
       add: [defaultSalesChannel[0].id],
     },
   });
-  logger.info("Finished seeding stock location data.");
 
-  logger.info("Seeding publishable API key data...");
+  logger.info("🔑 Setting up API keys...");
   const { result: publishableApiKeyResult } = await createApiKeysWorkflow(
     container
   ).run({
     input: {
       api_keys: [
         {
-          title: "Webshop",
+          title: "Rebbie's Store Webshop",
           type: "publishable",
           created_by: "",
         },
@@ -304,215 +320,148 @@ export default async function seedDemoData({ container }: ExecArgs) {
       add: [defaultSalesChannel[0].id],
     },
   });
-  logger.info("Finished seeding publishable API key data.");
 
-  logger.info("Seeding product data...");
-
+  logger.info("📦 Creating hair & jewelry product categories...");
   const { result: categoryResult } = await createProductCategoriesWorkflow(
     container
   ).run({
     input: {
       product_categories: [
         {
-          name: "Shirts",
+          name: "Hair Extensions",
           is_active: true,
+          description: "Premium quality human hair extensions",
         },
         {
-          name: "Sweatshirts",
+          name: "Brazilian Hair", 
           is_active: true,
+          description: "100% Brazilian human hair",
+          parent_category_id: null, // Will be set after creation
         },
         {
-          name: "Pants",
+          name: "Peruvian Hair",
           is_active: true,
+          description: "Premium Peruvian hair extensions",
         },
         {
-          name: "Merch",
+          name: "Indian Hair",
           is_active: true,
+          description: "Soft Indian Remy hair",
+        },
+        {
+          name: "Jewelry",
+          is_active: true,
+          description: "Beautiful jewelry collection",
+        },
+        {
+          name: "Necklaces",
+          is_active: true,
+          description: "Elegant necklaces for every occasion",
+        },
+        {
+          name: "Earrings",
+          is_active: true,
+          description: "Stunning earrings collection",
+        },
+        {
+          name: "Rings",
+          is_active: true,
+          description: "Beautiful rings collection",
+        },
+        {
+          name: "African Jewelry",
+          is_active: true,
+          description: "Traditional African jewelry pieces",
         },
       ],
     },
   });
 
+  logger.info("💎 Creating Rebbie's Store products...");
   await createProductsWorkflow(container).run({
     input: {
       products: [
         {
-          title: "Medusa T-Shirt",
+          title: "Brazilian Deep Wave Hair Bundle",
           category_ids: [
-            categoryResult.find((cat) => cat.name === "Shirts")!.id,
+            categoryResult.find((cat) => cat.name === "Hair Extensions")!.id,
+            categoryResult.find((cat) => cat.name === "Brazilian Hair")!.id,
           ],
-          description:
-            "Reimagine the feeling of a classic T-shirt. With our cotton T-shirts, everyday essentials no longer have to be ordinary.",
-          handle: "t-shirt",
-          weight: 400,
+          description: "100% virgin Brazilian human hair with deep wave texture. Perfect for creating voluminous, bouncy curls. Can be colored, straightened, and styled to your preference. Lasts 12+ months with proper care.",
+          handle: "brazilian-deep-wave-hair-bundle",
+          weight: 100,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
           images: [
             {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png",
+              url: "https://via.placeholder.com/600x600/000000/FFFFFF?text=Brazilian+Deep+Wave+1",
             },
             {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-back.png",
-            },
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-white-front.png",
-            },
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-white-back.png",
+              url: "https://via.placeholder.com/600x600/333333/FFFFFF?text=Brazilian+Deep+Wave+2",
             },
           ],
           options: [
             {
-              title: "Size",
-              values: ["S", "M", "L", "XL"],
+              title: "Length",
+              values: ["12 inches", "14 inches", "16 inches", "18 inches", "20 inches", "22 inches", "24 inches"],
             },
             {
               title: "Color",
-              values: ["Black", "White"],
+              values: ["Natural Black", "Dark Brown", "Medium Brown", "Light Brown"],
             },
           ],
           variants: [
             {
-              title: "S / Black",
-              sku: "SHIRT-S-BLACK",
+              title: "16 inches / Natural Black",
+              sku: "BDW-16-NB",
               options: {
-                Size: "S",
-                Color: "Black",
+                Length: "16 inches",
+                Color: "Natural Black",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  currency_code: "ngn",
+                  amount: 4500000, // ₦45,000
                 },
                 {
-                  amount: 15,
                   currency_code: "usd",
+                  amount: 5500, // $55
                 },
               ],
             },
             {
-              title: "S / White",
-              sku: "SHIRT-S-WHITE",
+              title: "18 inches / Natural Black",
+              sku: "BDW-18-NB",
               options: {
-                Size: "S",
-                Color: "White",
+                Length: "18 inches",
+                Color: "Natural Black",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  currency_code: "ngn", 
+                  amount: 5500000, // ₦55,000
                 },
                 {
-                  amount: 15,
                   currency_code: "usd",
+                  amount: 6800, // $68
                 },
               ],
             },
             {
-              title: "M / Black",
-              sku: "SHIRT-M-BLACK",
+              title: "20 inches / Natural Black",
+              sku: "BDW-20-NB",
               options: {
-                Size: "M",
-                Color: "Black",
+                Length: "20 inches",
+                Color: "Natural Black",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  currency_code: "ngn",
+                  amount: 6500000, // ₦65,000
                 },
                 {
-                  amount: 15,
                   currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "M / White",
-              sku: "SHIRT-M-WHITE",
-              options: {
-                Size: "M",
-                Color: "White",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "L / Black",
-              sku: "SHIRT-L-BLACK",
-              options: {
-                Size: "L",
-                Color: "Black",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "L / White",
-              sku: "SHIRT-L-WHITE",
-              options: {
-                Size: "L",
-                Color: "White",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "XL / Black",
-              sku: "SHIRT-XL-BLACK",
-              options: {
-                Size: "XL",
-                Color: "Black",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "XL / White",
-              sku: "SHIRT-XL-WHITE",
-              options: {
-                Size: "XL",
-                Color: "White",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  amount: 8000, // $80
                 },
               ],
             },
@@ -524,96 +473,68 @@ export default async function seedDemoData({ container }: ExecArgs) {
           ],
         },
         {
-          title: "Medusa Sweatshirt",
+          title: "Peruvian Straight Hair Bundle",
           category_ids: [
-            categoryResult.find((cat) => cat.name === "Sweatshirts")!.id,
+            categoryResult.find((cat) => cat.name === "Hair Extensions")!.id,
+            categoryResult.find((cat) => cat.name === "Peruvian Hair")!.id,
           ],
-          description:
-            "Reimagine the feeling of a classic sweatshirt. With our cotton sweatshirt, everyday essentials no longer have to be ordinary.",
-          handle: "sweatshirt",
-          weight: 400,
+          description: "Premium Peruvian straight hair that's naturally soft and silky. Perfect for sleek hairstyles. Can be curled, waved, or maintained straight. Tangle-free and long-lasting.",
+          handle: "peruvian-straight-hair-bundle",
+          weight: 100,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
           images: [
             {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-front.png",
+              url: "https://via.placeholder.com/600x600/444444/FFFFFF?text=Peruvian+Straight+1",
             },
             {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-back.png",
+              url: "https://via.placeholder.com/600x600/666666/FFFFFF?text=Peruvian+Straight+2",
             },
           ],
           options: [
             {
-              title: "Size",
-              values: ["S", "M", "L", "XL"],
+              title: "Length",
+              values: ["14 inches", "16 inches", "18 inches", "20 inches", "22 inches"],
+            },
+            {
+              title: "Color",
+              values: ["Natural Black", "Dark Brown"],
             },
           ],
           variants: [
             {
-              title: "S",
-              sku: "SWEATSHIRT-S",
+              title: "16 inches / Natural Black",
+              sku: "PS-16-NB",
               options: {
-                Size: "S",
+                Length: "16 inches",
+                Color: "Natural Black",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  currency_code: "ngn",
+                  amount: 4200000, // ₦42,000
                 },
                 {
-                  amount: 15,
                   currency_code: "usd",
+                  amount: 5200, // $52
                 },
               ],
             },
             {
-              title: "M",
-              sku: "SWEATSHIRT-M",
+              title: "18 inches / Natural Black",
+              sku: "PS-18-NB",
               options: {
-                Size: "M",
+                Length: "18 inches",
+                Color: "Natural Black",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  currency_code: "ngn",
+                  amount: 5200000, // ₦52,000
                 },
                 {
-                  amount: 15,
                   currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "L",
-              sku: "SWEATSHIRT-L",
-              options: {
-                Size: "L",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "XL",
-              sku: "SWEATSHIRT-XL",
-              options: {
-                Size: "XL",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  amount: 6400, // $64
                 },
               ],
             },
@@ -625,96 +546,68 @@ export default async function seedDemoData({ container }: ExecArgs) {
           ],
         },
         {
-          title: "Medusa Sweatpants",
+          title: "Gold Plated Chain Necklace",
           category_ids: [
-            categoryResult.find((cat) => cat.name === "Pants")!.id,
+            categoryResult.find((cat) => cat.name === "Jewelry")!.id,
+            categoryResult.find((cat) => cat.name === "Necklaces")!.id,
           ],
-          description:
-            "Reimagine the feeling of classic sweatpants. With our cotton sweatpants, everyday essentials no longer have to be ordinary.",
-          handle: "sweatpants",
-          weight: 400,
+          description: "Elegant 18k gold plated chain necklace. Hypoallergenic and water-resistant. Perfect for everyday wear or special occasions. Complements both traditional and modern styles.",
+          handle: "gold-plated-chain-necklace",
+          weight: 50,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
           images: [
             {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-front.png",
+              url: "https://via.placeholder.com/600x600/FFD700/000000?text=Gold+Chain+1",
             },
             {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-back.png",
+              url: "https://via.placeholder.com/600x600/FFA500/000000?text=Gold+Chain+2", 
             },
           ],
           options: [
             {
-              title: "Size",
-              values: ["S", "M", "L", "XL"],
+              title: "Length",
+              values: ["16 inches", "18 inches", "20 inches", "22 inches"],
+            },
+            {
+              title: "Style",
+              values: ["Cuban Link", "Rope Chain", "Box Chain", "Snake Chain"],
             },
           ],
           variants: [
             {
-              title: "S",
-              sku: "SWEATPANTS-S",
+              title: "18 inches / Cuban Link",
+              sku: "GPC-18-CL",
               options: {
-                Size: "S",
+                Length: "18 inches",
+                Style: "Cuban Link",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  currency_code: "ngn",
+                  amount: 2800000, // ₦28,000
                 },
                 {
-                  amount: 15,
                   currency_code: "usd",
+                  amount: 3500, // $35
                 },
               ],
             },
             {
-              title: "M",
-              sku: "SWEATPANTS-M",
+              title: "20 inches / Rope Chain",
+              sku: "GPC-20-RC",
               options: {
-                Size: "M",
+                Length: "20 inches",
+                Style: "Rope Chain",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  currency_code: "ngn",
+                  amount: 3200000, // ₦32,000
                 },
                 {
-                  amount: 15,
                   currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "L",
-              sku: "SWEATPANTS-L",
-              options: {
-                Size: "L",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "XL",
-              sku: "SWEATPANTS-XL",
-              options: {
-                Size: "XL",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  amount: 4000, // $40
                 },
               ],
             },
@@ -726,96 +619,153 @@ export default async function seedDemoData({ container }: ExecArgs) {
           ],
         },
         {
-          title: "Medusa Shorts",
+          title: "African Beaded Earrings",
           category_ids: [
-            categoryResult.find((cat) => cat.name === "Merch")!.id,
+            categoryResult.find((cat) => cat.name === "Jewelry")!.id,
+            categoryResult.find((cat) => cat.name === "Earrings")!.id,
+            categoryResult.find((cat) => cat.name === "African Jewelry")!.id,
           ],
-          description:
-            "Reimagine the feeling of classic shorts. With our cotton shorts, everyday essentials no longer have to be ordinary.",
-          handle: "shorts",
-          weight: 400,
+          description: "Handcrafted African beaded earrings featuring traditional patterns and vibrant colors. Perfect for cultural events and adding an authentic African touch to any outfit.",
+          handle: "african-beaded-earrings",
+          weight: 20,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
           images: [
             {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-front.png",
+              url: "https://via.placeholder.com/600x600/8B4513/FFFFFF?text=African+Earrings+1",
             },
             {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-back.png",
+              url: "https://via.placeholder.com/600x600/A0522D/FFFFFF?text=African+Earrings+2",
             },
           ],
           options: [
             {
+              title: "Color Pattern",
+              values: ["Red & Gold", "Blue & White", "Green & Yellow", "Multi-color"],
+            },
+            {
               title: "Size",
-              values: ["S", "M", "L", "XL"],
+              values: ["Small", "Medium", "Large"],
             },
           ],
           variants: [
             {
-              title: "S",
-              sku: "SHORTS-S",
+              title: "Red & Gold / Medium",
+              sku: "ABE-RG-M",
               options: {
-                Size: "S",
+                "Color Pattern": "Red & Gold",
+                Size: "Medium",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  currency_code: "ngn",
+                  amount: 1200000, // ₦12,000
                 },
                 {
-                  amount: 15,
                   currency_code: "usd",
+                  amount: 1500, // $15
                 },
               ],
             },
             {
-              title: "M",
-              sku: "SHORTS-M",
+              title: "Multi-color / Large",
+              sku: "ABE-MC-L",
               options: {
-                Size: "M",
+                "Color Pattern": "Multi-color",
+                Size: "Large",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  currency_code: "ngn",
+                  amount: 1800000, // ₦18,000
                 },
                 {
-                  amount: 15,
                   currency_code: "usd",
+                  amount: 2200, // $22
+                },
+              ],
+            },
+          ],
+          sales_channels: [
+            {
+              id: defaultSalesChannel[0].id,
+            },
+          ],
+        },
+        {
+          title: "Sterling Silver Ring Set",
+          category_ids: [
+            categoryResult.find((cat) => cat.name === "Jewelry")!.id,
+            categoryResult.find((cat) => cat.name === "Rings")!.id,
+          ],
+          description: "Set of 3 sterling silver rings - one plain band, one with crystals, and one with African-inspired patterns. Adjustable sizing fits most fingers.",
+          handle: "sterling-silver-ring-set",
+          weight: 30,
+          status: ProductStatus.PUBLISHED,
+          shipping_profile_id: shippingProfile.id,
+          images: [
+            {
+              url: "https://via.placeholder.com/600x600/C0C0C0/000000?text=Silver+Ring+Set+1",
+            },
+            {
+              url: "https://via.placeholder.com/600x600/DCDCDC/000000?text=Silver+Ring+Set+2",
+            },
+          ],
+          options: [
+            {
+              title: "Set Type",
+              values: ["Classic Set", "Crystal Set", "African Pattern Set"],
+            },
+          ],
+          variants: [
+            {
+              title: "Classic Set",
+              sku: "SSR-CS",
+              options: {
+                "Set Type": "Classic Set",
+              },
+              prices: [
+                {
+                  currency_code: "ngn",
+                  amount: 2400000, // ₦24,000
+                },
+                {
+                  currency_code: "usd",
+                  amount: 3000, // $30
                 },
               ],
             },
             {
-              title: "L",
-              sku: "SHORTS-L",
+              title: "Crystal Set",
+              sku: "SSR-CRS",
               options: {
-                Size: "L",
+                "Set Type": "Crystal Set",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  currency_code: "ngn",
+                  amount: 3200000, // ₦32,000
                 },
                 {
-                  amount: 15,
                   currency_code: "usd",
+                  amount: 4000, // $40
                 },
               ],
             },
             {
-              title: "XL",
-              sku: "SHORTS-XL",
+              title: "African Pattern Set",
+              sku: "SSR-APS",
               options: {
-                Size: "XL",
+                "Set Type": "African Pattern Set",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  currency_code: "ngn",
+                  amount: 3600000, // ₦36,000
                 },
                 {
-                  amount: 15,
                   currency_code: "usd",
+                  amount: 4500, // $45
                 },
               ],
             },
@@ -829,10 +779,8 @@ export default async function seedDemoData({ container }: ExecArgs) {
       ],
     },
   });
-  logger.info("Finished seeding product data.");
 
-  logger.info("Seeding inventory levels.");
-
+  logger.info("📊 Setting up inventory levels...");
   const { data: inventoryItems } = await query.graph({
     entity: "inventory_item",
     fields: ["id"],
@@ -842,7 +790,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
   for (const inventoryItem of inventoryItems) {
     const inventoryLevel = {
       location_id: stockLocation.id,
-      stocked_quantity: 1000000,
+      stocked_quantity: 50, 
       inventory_item_id: inventoryItem.id,
     };
     inventoryLevels.push(inventoryLevel);
@@ -854,5 +802,10 @@ export default async function seedDemoData({ container }: ExecArgs) {
     },
   });
 
-  logger.info("Finished seeding inventory levels data.");
+  logger.info("🎉 Rebbie's Store data seeding completed!");
+  logger.info("💡 Next steps:");
+  logger.info("   1. Add Paystack & Flutterwave payment methods");
+  logger.info("   2. Update product images with real hair & jewelry photos");
+  logger.info("   3. Configure frontend to display new products");
+  logger.info("   4. Test Nigerian payment flows");
 }

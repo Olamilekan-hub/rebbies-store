@@ -14,4 +14,5 @@ export default defineConfig({
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     }
   }
+  // Note: Payment modules will be added later in a v2-compatible way
 })

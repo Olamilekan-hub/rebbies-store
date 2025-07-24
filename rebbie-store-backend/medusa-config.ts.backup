@@ -1,0 +1,118 @@
+import { loadEnv, defineConfig } from '@medusajs/framework/utils'
+
+loadEnv(process.env.NODE_ENV || 'development', process.cwd())
+
+export default defineConfig({
+  projectConfig: {
+    databaseUrl: process.env.DATABASE_URL,
+    redisUrl: process.env.REDIS_URL,
+    http: {
+      storeCors: process.env.STORE_CORS!,
+      adminCors: process.env.ADMIN_CORS!,
+      authCors: process.env.AUTH_CORS!,
+      jwtSecret: process.env.JWT_SECRET || "supersecret",
+      cookieSecret: process.env.COOKIE_SECRET || "supersecret",
+    }
+  },
+  modules: [
+    // Nigerian Payment Module Configuration
+    {
+      resolve: "@medusajs/payment",
+      options: {
+        providers: [
+          // Default manual payment (for testing)
+          {
+            resolve: "@medusajs/payment",
+            id: "manual",
+            options: {},
+          },
+          // Paystack Payment Provider (Primary for Nigeria)
+          {
+            resolve: "medusa-payment-paystack", 
+            id: "paystack",
+            options: {
+              secret_key: process.env.PAYSTACK_SECRET_KEY,
+              public_key: process.env.PAYSTACK_PUBLIC_KEY,
+              // Nigerian-specific options
+              webhook_endpoint: "/webhooks/paystack",
+              currency: "NGN",
+              channels: ["card", "bank", "ussd", "bank_transfer"],
+            },
+          },
+          // Flutterwave Payment Provider (Alternative/International)
+          {
+            resolve: "medusa-payment-flutterwave",
+            id: "flutterwave", 
+            options: {
+              secret_key: process.env.FLUTTERWAVE_SECRET_KEY,
+              public_key: process.env.FLUTTERWAVE_PUBLIC_KEY,
+              // Multi-currency support
+              currencies: ["NGN", "USD", "EUR"],
+              webhook_endpoint: "/webhooks/flutterwave",
+            },
+          },
+        ],
+      },
+    },
+    // File handling for product images
+    {
+      resolve: "@medusajs/file",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/file-local", 
+            id: "local",
+            options: {
+              upload_dir: "uploads",
+            },
+          },
+        ],
+      },
+    },
+  ],
+})
+
+// Additional Nigerian-specific configuration
+export const nigerianConfig = {
+  paymentMethods: {
+    paystack: {
+      cards: ["verve", "visa", "mastercard"],
+      banks: ["gtbank", "zenith", "uba", "first_bank", "access", "fcmb", "polaris", "wema", "ecobank", "union_bank", "keystone", "opay", "kuda"],
+      ussd: ["*737#", "*966#", "*919#"],
+      channels: ["card", "bank", "ussd", "bank_transfer", "mobile_money"],
+    },
+    flutterwave: {
+      cards: ["visa", "mastercard", "verve"],
+      mobile_money: ["mtn", "airtel", "9mobile"],
+      bank_transfer: true,
+    },
+  },
+  
+  // Nigerian shipping zones
+  shippingZones: {
+    lagos: {
+      name: "Lagos State",
+      sameDay: true,
+      cost: 2500, // ₦2,500
+    },
+    southwest: {
+      name: "Southwest Nigeria",
+      states: ["ogun", "oyo", "osun", "ondo", "ekiti"],
+      deliveryDays: "2-3",
+      cost: 3500, // ₦3,500
+    },
+    nationwide: {
+      name: "Nigeria",
+      deliveryDays: "3-7", 
+      cost: 5000, // ₦5,000
+    },
+  },
+  
+  // Currency settings
+  currency: {
+    primary: "NGN",
+    symbol: "₦",
+    format: "₦{amount}",
+    decimals: 2,
+  },
+};
