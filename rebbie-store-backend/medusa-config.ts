@@ -13,6 +13,27 @@ export default defineConfig({
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     }
-  }
-  // Note: Payment modules will be added later in a v2-compatible way
+  },
+  modules: [
+    // Payment Module with Nigerian providers
+    {
+      resolve: "@medusajs/medusa/payment",
+      options: {
+        providers: [
+          // System/Manual payment provider (built-in)
+          // This is automatically available as pp_system
+          
+          // Paystack payment provider
+          {
+            resolve: "medusa-payment-paystack",
+            id: "paystack",
+            options: {
+              secret_key: process.env.PAYSTACK_SECRET_KEY || "",
+              disable_retries: false, // Keep retries enabled for production
+            } satisfies import("medusa-payment-paystack").PluginOptions,
+          },
+        ],
+      },
+    },
+  ],
 })
