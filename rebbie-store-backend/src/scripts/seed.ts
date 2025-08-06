@@ -321,147 +321,213 @@ export default async function seedRebbieStoreData({ container }: ExecArgs) {
     },
   });
 
-  logger.info("📦 Creating hair & jewelry product categories...");
+  logger.info("📦 Creating Rebbie's Store product categories...");
   const { result: categoryResult } = await createProductCategoriesWorkflow(
     container
   ).run({
     input: {
       product_categories: [
+        // === FASHION BAGS (Main Category) ===
         {
-          name: "Hair Extensions",
+          name: "Fashion Bags",
           is_active: true,
-          description: "Premium quality human hair extensions",
+          description: "Stylish and trendy bags for every occasion",
+          handle: "fashion-bags",
         },
-        {
-          name: "Brazilian Hair", 
-          is_active: true,
-          description: "100% Brazilian human hair",
-          parent_category_id: null, // Will be set after creation
-        },
-        {
-          name: "Peruvian Hair",
-          is_active: true,
-          description: "Premium Peruvian hair extensions",
-        },
-        {
-          name: "Indian Hair",
-          is_active: true,
-          description: "Soft Indian Remy hair",
-        },
+        
+        // === JEWELRY (Main Category) ===
         {
           name: "Jewelry",
           is_active: true,
-          description: "Beautiful jewelry collection",
+          description: "Beautiful jewelry collection for every style",
+          handle: "jewelry",
         },
+        
+        // === FRAGRANCES (Main Category) ===
+        {
+          name: "Fragrances",
+          is_active: true,
+          description: "Premium fragrances for men and women",
+          handle: "fragrances",
+        },
+
+        // === FASHION BAGS SUBCATEGORIES ===
+        {
+          name: "Thrift Fashion Bags", 
+          is_active: true,
+          description: "Pre-owned luxury and designer bags - sustainable fashion choices",
+          handle: "thrift-fashion-bags",
+        },
+        {
+          name: "Non-Thrift Fashion Bags",
+          is_active: true,
+          description: "New designer bags and contemporary styles",
+          handle: "non-thrift-fashion-bags",
+        },
+        
+        // === JEWELRY SUBCATEGORIES ===
         {
           name: "Necklaces",
           is_active: true,
           description: "Elegant necklaces for every occasion",
+          handle: "necklaces",
         },
         {
           name: "Earrings",
           is_active: true,
           description: "Stunning earrings collection",
+          handle: "earrings", 
         },
         {
           name: "Rings",
           is_active: true,
           description: "Beautiful rings collection",
+          handle: "rings",
+        },
+        {
+          name: "Bracelets",
+          is_active: true,
+          description: "Stylish bracelets and bangles",
+          handle: "bracelets",
         },
         {
           name: "African Jewelry",
           is_active: true,
           description: "Traditional African jewelry pieces",
+          handle: "african-jewelry",
+        },
+        
+        // === FRAGRANCES SUBCATEGORIES ===
+        {
+          name: "Men's Fragrances",
+          is_active: true,
+          description: "Cologne, eau de toilette, and aftershave for men",
+          handle: "mens-fragrances",
+        },
+        {
+          name: "Women's Fragrances",
+          is_active: true,
+          description: "Perfume, eau de parfum, and body mist for women",
+          handle: "womens-fragrances",
         },
       ],
     },
   });
+
+  // Set up parent-child relationships for categories
+  logger.info("🔗 Setting up category relationships...");
+
+  // Get main categories
+  const fashionBagsCategory = categoryResult.find(cat => cat.name === "Fashion Bags");
+  const jewelryCategory = categoryResult.find(cat => cat.name === "Jewelry");
+  const fragrancesCategory = categoryResult.find(cat => cat.name === "Fragrances");
+
+  // Update Fashion Bags subcategories
+  if (fashionBagsCategory) {
+    const thriftBags = categoryResult.find(cat => cat.name === "Thrift Fashion Bags");
+    const nonThriftBags = categoryResult.find(cat => cat.name === "Non-Thrift Fashion Bags");
+    
+    if (thriftBags && nonThriftBags) {
+      // Note: In MedusaJS v2, you might need to use a different method to update categories
+      // This is a placeholder for the actual update logic
+      console.log(`Setting Fashion Bags as parent for: ${thriftBags.name}, ${nonThriftBags.name}`);
+    }
+  }
+
+  // Update Jewelry subcategories  
+  if (jewelryCategory) {
+    const jewelrySubcategories = ["Necklaces", "Earrings", "Rings", "Bracelets", "African Jewelry"];
+    jewelrySubcategories.forEach(subcatName => {
+      const subcat = categoryResult.find(cat => cat.name === subcatName);
+      if (subcat) {
+        console.log(`Setting Jewelry as parent for: ${subcat.name}`);
+      }
+    });
+  }
+
+  // Update Fragrances subcategories
+  if (fragrancesCategory) {
+    const menFragrances = categoryResult.find(cat => cat.name === "Men's Fragrances");
+    const womenFragrances = categoryResult.find(cat => cat.name === "Women's Fragrances");
+    
+    if (menFragrances && womenFragrances) {
+      console.log(`Setting Fragrances as parent for: ${menFragrances.name}, ${womenFragrances.name}`);
+    }
+  }
+
+  logger.info("✅ Categories created successfully!");
+  logger.info("📊 Category Summary:");
+  logger.info("   • Fashion Bags (Thrift + Non-Thrift)");
+  logger.info("   • Jewelry (Necklaces, Earrings, Rings, Bracelets, African)");
+  logger.info("   • Fragrances (Men's + Women's)");
 
   logger.info("💎 Creating Rebbie's Store products...");
   await createProductsWorkflow(container).run({
     input: {
       products: [
         {
-          title: "Brazilian Deep Wave Hair Bundle",
+          title: "Vintage Chanel Quilted Handbag",
           category_ids: [
-            categoryResult.find((cat) => cat.name === "Hair Extensions")!.id,
-            categoryResult.find((cat) => cat.name === "Brazilian Hair")!.id,
+            categoryResult.find((cat) => cat.name === "Fashion Bags")!.id,
+            categoryResult.find((cat) => cat.name === "Thrift Fashion Bags")!.id,
           ],
-          description: "100% virgin Brazilian human hair with deep wave texture. Perfect for creating voluminous, bouncy curls. Can be colored, straightened, and styled to your preference. Lasts 12+ months with proper care.",
-          handle: "brazilian-deep-wave-hair-bundle",
-          weight: 100,
+          description: "Authentic pre-owned Chanel quilted handbag in excellent condition. Classic design that never goes out of style. Includes authenticity certificate.",
+          handle: "vintage-chanel-quilted-handbag",
+          weight: 800,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
           images: [
             {
-              url: "https://via.placeholder.com/600x600/000000/FFFFFF?text=Brazilian+Deep+Wave+1",
+              url: "https://via.placeholder.com/600x600/7C3AED/FFFFFF?text=Vintage+Chanel+Bag+1",
             },
             {
-              url: "https://via.placeholder.com/600x600/333333/FFFFFF?text=Brazilian+Deep+Wave+2",
+              url: "https://via.placeholder.com/600x600/5B21B6/FFFFFF?text=Vintage+Chanel+Bag+2",
             },
           ],
           options: [
             {
-              title: "Length",
-              values: ["12 inches", "14 inches", "16 inches", "18 inches", "20 inches", "22 inches", "24 inches"],
+              title: "Condition",
+              values: ["Excellent", "Very Good", "Good"],
             },
             {
               title: "Color",
-              values: ["Natural Black", "Dark Brown", "Medium Brown", "Light Brown"],
+              values: ["Classic Black", "Beige", "Navy Blue"],
             },
           ],
           variants: [
             {
-              title: "16 inches / Natural Black",
-              sku: "BDW-16-NB",
+              title: "Excellent / Classic Black",
+              sku: "CHANEL-EXC-BLK",
               options: {
-                Length: "16 inches",
-                Color: "Natural Black",
+                Condition: "Excellent",
+                Color: "Classic Black",
               },
               prices: [
                 {
                   currency_code: "ngn",
-                  amount: 4500000, // ₦45,000
+                  amount: 45000000, // ₦450,000
                 },
                 {
                   currency_code: "usd",
-                  amount: 5500, // $55
+                  amount: 55000, // $550
                 },
               ],
             },
             {
-              title: "18 inches / Natural Black",
-              sku: "BDW-18-NB",
+              title: "Very Good / Beige",
+              sku: "CHANEL-VG-BEIGE",
               options: {
-                Length: "18 inches",
-                Color: "Natural Black",
-              },
-              prices: [
-                {
-                  currency_code: "ngn", 
-                  amount: 5500000, // ₦55,000
-                },
-                {
-                  currency_code: "usd",
-                  amount: 6800, // $68
-                },
-              ],
-            },
-            {
-              title: "20 inches / Natural Black",
-              sku: "BDW-20-NB",
-              options: {
-                Length: "20 inches",
-                Color: "Natural Black",
+                Condition: "Very Good",
+                Color: "Beige",
               },
               prices: [
                 {
                   currency_code: "ngn",
-                  amount: 6500000, // ₦65,000
+                  amount: 38000000, // ₦380,000
                 },
                 {
                   currency_code: "usd",
-                  amount: 8000, // $80
+                  amount: 46000, // $460
                 },
               ],
             },
@@ -473,68 +539,68 @@ export default async function seedRebbieStoreData({ container }: ExecArgs) {
           ],
         },
         {
-          title: "Peruvian Straight Hair Bundle",
+          title: "Contemporary Leather Tote Bag",
           category_ids: [
-            categoryResult.find((cat) => cat.name === "Hair Extensions")!.id,
-            categoryResult.find((cat) => cat.name === "Peruvian Hair")!.id,
+            categoryResult.find((cat) => cat.name === "Fashion Bags")!.id,
+            categoryResult.find((cat) => cat.name === "Non-Thrift Fashion Bags")!.id,
           ],
-          description: "Premium Peruvian straight hair that's naturally soft and silky. Perfect for sleek hairstyles. Can be curled, waved, or maintained straight. Tangle-free and long-lasting.",
-          handle: "peruvian-straight-hair-bundle",
-          weight: 100,
+          description: "Brand new contemporary leather tote bag perfect for work and travel. Made from premium genuine leather with spacious interior and multiple pockets.",
+          handle: "contemporary-leather-tote-bag",
+          weight: 600,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
           images: [
             {
-              url: "https://via.placeholder.com/600x600/444444/FFFFFF?text=Peruvian+Straight+1",
+              url: "https://via.placeholder.com/600x600/000000/FFFFFF?text=Leather+Tote+1",
             },
             {
-              url: "https://via.placeholder.com/600x600/666666/FFFFFF?text=Peruvian+Straight+2",
+              url: "https://via.placeholder.com/600x600/7C3AED/FFFFFF?text=Leather+Tote+2",
             },
           ],
           options: [
             {
-              title: "Length",
-              values: ["14 inches", "16 inches", "18 inches", "20 inches", "22 inches"],
+              title: "Size",
+              values: ["Medium", "Large", "Extra Large"],
             },
             {
               title: "Color",
-              values: ["Natural Black", "Dark Brown"],
+              values: ["Black", "Brown", "Burgundy", "Purple"],
             },
           ],
           variants: [
             {
-              title: "16 inches / Natural Black",
-              sku: "PS-16-NB",
+              title: "Large / Black",
+              sku: "TOTE-LG-BLK",
               options: {
-                Length: "16 inches",
-                Color: "Natural Black",
+                Size: "Large",
+                Color: "Black",
               },
               prices: [
                 {
                   currency_code: "ngn",
-                  amount: 4200000, // ₦42,000
+                  amount: 8500000, // ₦85,000
                 },
                 {
                   currency_code: "usd",
-                  amount: 5200, // $52
+                  amount: 10500, // $105
                 },
               ],
             },
             {
-              title: "18 inches / Natural Black",
-              sku: "PS-18-NB",
+              title: "Medium / Purple",
+              sku: "TOTE-MD-PUR",
               options: {
-                Length: "18 inches",
-                Color: "Natural Black",
+                Size: "Medium",
+                Color: "Purple",
               },
               prices: [
                 {
                   currency_code: "ngn",
-                  amount: 5200000, // ₦52,000
+                  amount: 7500000, // ₦75,000
                 },
                 {
                   currency_code: "usd",
-                  amount: 6400, // $64
+                  amount: 9200, // $92
                 },
               ],
             },
@@ -546,68 +612,68 @@ export default async function seedRebbieStoreData({ container }: ExecArgs) {
           ],
         },
         {
-          title: "Gold Plated Chain Necklace",
+          title: "Dior Sauvage Eau de Toilette",
           category_ids: [
-            categoryResult.find((cat) => cat.name === "Jewelry")!.id,
-            categoryResult.find((cat) => cat.name === "Necklaces")!.id,
+            categoryResult.find((cat) => cat.name === "Fragrances")!.id,
+            categoryResult.find((cat) => cat.name === "Men's Fragrances")!.id,
           ],
-          description: "Elegant 18k gold plated chain necklace. Hypoallergenic and water-resistant. Perfect for everyday wear or special occasions. Complements both traditional and modern styles.",
-          handle: "gold-plated-chain-necklace",
-          weight: 50,
+          description: "Dior Sauvage is an olfactory journey through wild nature, inspired by wide-open spaces. Fresh, raw and noble fragrance with bergamot and pepper notes.",
+          handle: "dior-sauvage-eau-de-toilette",
+          weight: 300,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
           images: [
             {
-              url: "https://via.placeholder.com/600x600/FFD700/000000?text=Gold+Chain+1",
+              url: "https://via.placeholder.com/600x600/000000/7C3AED?text=Dior+Sauvage+1",
             },
             {
-              url: "https://via.placeholder.com/600x600/FFA500/000000?text=Gold+Chain+2", 
+              url: "https://via.placeholder.com/600x600/5B21B6/FFFFFF?text=Dior+Sauvage+2",
             },
           ],
           options: [
             {
-              title: "Length",
-              values: ["16 inches", "18 inches", "20 inches", "22 inches"],
+              title: "Size",
+              values: ["60ml", "100ml", "200ml"],
             },
             {
-              title: "Style",
-              values: ["Cuban Link", "Rope Chain", "Box Chain", "Snake Chain"],
+              title: "Type",
+              values: ["Eau de Toilette", "Eau de Parfum"],
             },
           ],
           variants: [
             {
-              title: "18 inches / Cuban Link",
-              sku: "GPC-18-CL",
+              title: "100ml / Eau de Toilette",
+              sku: "DIOR-SAV-100-EDT",
               options: {
-                Length: "18 inches",
-                Style: "Cuban Link",
+                Size: "100ml",
+                Type: "Eau de Toilette",
               },
               prices: [
                 {
                   currency_code: "ngn",
-                  amount: 2800000, // ₦28,000
+                  amount: 18500000, // ₦185,000
                 },
                 {
                   currency_code: "usd",
-                  amount: 3500, // $35
+                  amount: 22500, // $225
                 },
               ],
             },
             {
-              title: "20 inches / Rope Chain",
-              sku: "GPC-20-RC",
+              title: "60ml / Eau de Toilette",
+              sku: "DIOR-SAV-60-EDT",
               options: {
-                Length: "20 inches",
-                Style: "Rope Chain",
+                Size: "60ml",
+                Type: "Eau de Toilette",
               },
               prices: [
                 {
                   currency_code: "ngn",
-                  amount: 3200000, // ₦32,000
+                  amount: 14500000, // ₦145,000
                 },
                 {
                   currency_code: "usd",
-                  amount: 4000, // $40
+                  amount: 17800, // $178
                 },
               ],
             },
@@ -619,153 +685,141 @@ export default async function seedRebbieStoreData({ container }: ExecArgs) {
           ],
         },
         {
-          title: "African Beaded Earrings",
+          title: "Chanel No. 5 Eau de Parfum",
           category_ids: [
-            categoryResult.find((cat) => cat.name === "Jewelry")!.id,
-            categoryResult.find((cat) => cat.name === "Earrings")!.id,
-            categoryResult.find((cat) => cat.name === "African Jewelry")!.id,
+            categoryResult.find((cat) => cat.name === "Fragrances")!.id,
+            categoryResult.find((cat) => cat.name === "Women's Fragrances")!.id,
           ],
-          description: "Handcrafted African beaded earrings featuring traditional patterns and vibrant colors. Perfect for cultural events and adding an authentic African touch to any outfit.",
-          handle: "african-beaded-earrings",
-          weight: 20,
+          description: "The legendary Chanel No. 5 Eau de Parfum. An iconic fragrance with ylang-ylang and neroli, enhanced by jasmine and rose, on a warm base of vetiver and sandalwood.",
+          handle: "chanel-no5-eau-de-parfum",
+          weight: 250,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
           images: [
             {
-              url: "https://via.placeholder.com/600x600/8B4513/FFFFFF?text=African+Earrings+1",
+              url: "https://via.placeholder.com/600x600/FFFFFF/000000?text=Chanel+No5+1",
             },
             {
-              url: "https://via.placeholder.com/600x600/A0522D/FFFFFF?text=African+Earrings+2",
+              url: "https://via.placeholder.com/600x600/7C3AED/FFFFFF?text=Chanel+No5+2",
             },
           ],
           options: [
             {
-              title: "Color Pattern",
-              values: ["Red & Gold", "Blue & White", "Green & Yellow", "Multi-color"],
+              title: "Size",
+              values: ["35ml", "50ml", "100ml"],
+            },
+            {
+              title: "Edition",
+              values: ["Classic", "Limited Edition"],
+            },
+          ],
+          variants: [
+            {
+              title: "50ml / Classic",
+              sku: "CHANEL-NO5-50-CLS",
+              options: {
+                Size: "50ml",
+                Edition: "Classic",
+              },
+              prices: [
+                {
+                  currency_code: "ngn",
+                  amount: 28500000, // ₦285,000
+                },
+                {
+                  currency_code: "usd",
+                  amount: 35000, // $350
+                },
+              ],
+            },
+            {
+              title: "100ml / Classic",
+              sku: "CHANEL-NO5-100-CLS",
+              options: {
+                Size: "100ml",
+                Edition: "Classic",
+              },
+              prices: [
+                {
+                  currency_code: "ngn",
+                  amount: 45000000, // ₦450,000
+                },
+                {
+                  currency_code: "usd",
+                  amount: 55000, // $550
+                },
+              ],
+            },
+          ],
+          sales_channels: [
+            {
+              id: defaultSalesChannel[0].id,
+            },
+          ],
+        },
+        {
+          title: "Victoria's Secret Body Mist Collection",
+          category_ids: [
+            categoryResult.find((cat) => cat.name === "Fragrances")!.id,
+            categoryResult.find((cat) => cat.name === "Women's Fragrances")!.id,
+          ],
+          description: "Light and refreshing body mist perfect for everyday wear. Available in multiple delightful scents. Great for layering or wearing alone.",
+          handle: "victoria-secret-body-mist",
+          weight: 150,
+          status: ProductStatus.PUBLISHED,
+          shipping_profile_id: shippingProfile.id,
+          images: [
+            {
+              url: "https://via.placeholder.com/600x600/A78BFA/000000?text=VS+Body+Mist+1",
+            },
+            {
+              url: "https://via.placeholder.com/600x600/C084FC/000000?text=VS+Body+Mist+2",
+            },
+          ],
+          options: [
+            {
+              title: "Scent",
+              values: ["Vanilla & Orchid", "Berry Kiss", "Coconut Passion", "Pure Seduction"],
             },
             {
               title: "Size",
-              values: ["Small", "Medium", "Large"],
+              values: ["250ml"],
             },
           ],
           variants: [
             {
-              title: "Red & Gold / Medium",
-              sku: "ABE-RG-M",
+              title: "Vanilla & Orchid / 250ml",
+              sku: "VS-VANILLA-250",
               options: {
-                "Color Pattern": "Red & Gold",
-                Size: "Medium",
+                Scent: "Vanilla & Orchid",
+                Size: "250ml",
               },
               prices: [
                 {
                   currency_code: "ngn",
-                  amount: 1200000, // ₦12,000
+                  amount: 1500000, // ₦15,000
                 },
                 {
                   currency_code: "usd",
-                  amount: 1500, // $15
+                  amount: 1800, // $18
                 },
               ],
             },
             {
-              title: "Multi-color / Large",
-              sku: "ABE-MC-L",
+              title: "Pure Seduction / 250ml",
+              sku: "VS-SEDUCTION-250",
               options: {
-                "Color Pattern": "Multi-color",
-                Size: "Large",
+                Scent: "Pure Seduction",
+                Size: "250ml",
               },
               prices: [
                 {
                   currency_code: "ngn",
-                  amount: 1800000, // ₦18,000
+                  amount: 1500000, // ₦15,000
                 },
                 {
                   currency_code: "usd",
-                  amount: 2200, // $22
-                },
-              ],
-            },
-          ],
-          sales_channels: [
-            {
-              id: defaultSalesChannel[0].id,
-            },
-          ],
-        },
-        {
-          title: "Sterling Silver Ring Set",
-          category_ids: [
-            categoryResult.find((cat) => cat.name === "Jewelry")!.id,
-            categoryResult.find((cat) => cat.name === "Rings")!.id,
-          ],
-          description: "Set of 3 sterling silver rings - one plain band, one with crystals, and one with African-inspired patterns. Adjustable sizing fits most fingers.",
-          handle: "sterling-silver-ring-set",
-          weight: 30,
-          status: ProductStatus.PUBLISHED,
-          shipping_profile_id: shippingProfile.id,
-          images: [
-            {
-              url: "https://via.placeholder.com/600x600/C0C0C0/000000?text=Silver+Ring+Set+1",
-            },
-            {
-              url: "https://via.placeholder.com/600x600/DCDCDC/000000?text=Silver+Ring+Set+2",
-            },
-          ],
-          options: [
-            {
-              title: "Set Type",
-              values: ["Classic Set", "Crystal Set", "African Pattern Set"],
-            },
-          ],
-          variants: [
-            {
-              title: "Classic Set",
-              sku: "SSR-CS",
-              options: {
-                "Set Type": "Classic Set",
-              },
-              prices: [
-                {
-                  currency_code: "ngn",
-                  amount: 2400000, // ₦24,000
-                },
-                {
-                  currency_code: "usd",
-                  amount: 3000, // $30
-                },
-              ],
-            },
-            {
-              title: "Crystal Set",
-              sku: "SSR-CRS",
-              options: {
-                "Set Type": "Crystal Set",
-              },
-              prices: [
-                {
-                  currency_code: "ngn",
-                  amount: 3200000, // ₦32,000
-                },
-                {
-                  currency_code: "usd",
-                  amount: 4000, // $40
-                },
-              ],
-            },
-            {
-              title: "African Pattern Set",
-              sku: "SSR-APS",
-              options: {
-                "Set Type": "African Pattern Set",
-              },
-              prices: [
-                {
-                  currency_code: "ngn",
-                  amount: 3600000, // ₦36,000
-                },
-                {
-                  currency_code: "usd",
-                  amount: 4500, // $45
+                  amount: 1800, // $18
                 },
               ],
             },
