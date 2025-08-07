@@ -13,7 +13,6 @@
     "@heroicons/react": "^2.2.0",
     "@medusajs/js-sdk": "^2.8.8",
     "@medusajs/types": "^2.8.5",
-    "@next/font": "^14.2.15",
     "axios": "^1.10.0",
     "clsx": "^2.1.1",
     "firebase": "^12.0.0",
@@ -26,16 +25,17 @@
     "react-hook-form": "^7.62.0",
     "react-hot-toast": "^2.5.2",
     "tailwind-merge": "^3.3.1",
-    "tailwindcss": "^4.0.0"
+    "tailwindcss": "^3.4.17"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.20",
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
+    "postcss": "^8.5.0",
     "typescript": "^5"
   }
 }
