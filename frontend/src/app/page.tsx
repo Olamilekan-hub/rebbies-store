@@ -1,211 +1,335 @@
-import Link from 'next/link';
+import React from 'react';
+import { Metadata } from 'next';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
-import "./globals.css";
+import HeroSection from '@/components/landing/HeroSection';
+import FeaturedProducts from '@/components/landing/FeaturedProducts';
+import CategoryShowcase from '@/components/landing/CategoryShowcase';
+import BrandStory from '@/components/landing/BrandStory';
+import Testimonials from '@/components/landing/Testimonials';
+import Newsletter from '@/components/landing/Newsletter';
 
-export default function HomePage() {
+// SEO Metadata for Nigerian market
+export const metadata: Metadata = {
+  title: "Rebbie's Store - Nigeria's Premier Fashion & Beauty Destination",
+  description: "Discover luxury fashion bags, stunning jewelry, and premium fragrances. Shop authentic thrift pieces and new designer collections with same-day Lagos delivery.",
+  keywords: [
+    "fashion bags Nigeria",
+    "luxury handbags Lagos",
+    "Nigerian jewelry",
+    "designer fragrances Nigeria",
+    "thrift designer bags",
+    "authentic luxury items",
+    "same day delivery Lagos",
+    "Nigerian fashion store",
+    "luxury accessories Nigeria",
+    "designer perfume Nigeria"
+  ],
+  authors: [{ name: "Rebbie's Store" }],
+  creator: "Rebbie's Store",
+  publisher: "Rebbie's Store",
+  robots: "index, follow",
+  
+  // Open Graph for social sharing
+  openGraph: {
+    title: "Rebbie's Store - Nigeria's Premier Fashion & Beauty Destination",
+    description: "Discover luxury fashion bags, stunning jewelry, and premium fragrances with authentic thrift pieces and same-day Lagos delivery.",
+    url: "https://rebbies-store.com",
+    siteName: "Rebbie's Store",
+    locale: "en_NG",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Rebbie's Store - Luxury Fashion & Beauty",
+      },
+    ],
+  },
+  
+  // Twitter Card
+  twitter: {
+    card: "summary_large_image",
+    title: "Rebbie's Store - Nigeria's Premier Fashion & Beauty Destination",
+    description: "Luxury fashion bags, jewelry & fragrances with same-day Lagos delivery",
+    images: ["/twitter-image.jpg"],
+    creator: "@rebbiesstore",
+  },
+  
+  // Additional metadata for Nigerian market
+  other: {
+    "geo.region": "NG",
+    "geo.placename": "Nigeria",
+    "geo.position": "9.082;8.6753", // Nigeria center coordinates
+    "ICBM": "9.082, 8.6753",
+    "currency": "NGN",
+    "price-range": "₦8,000-₦500,000",
+    "contact": "+234-806-577-6378",
+    "payment-methods": "Paystack, Bank Transfer, Cash on Delivery",
+    "delivery-areas": "Lagos, Abuja, Port Harcourt, All Nigeria",
+  },
+};
+
+// Structured Data for SEO
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "OnlineStore",
+  "name": "Rebbie's Store",
+  "description": "Nigeria's premier destination for luxury fashion bags, jewelry, and fragrances",
+  "url": "https://rebbies-store.com",
+  "logo": "https://rebbies-store.com/logo.png",
+  "image": "https://rebbies-store.com/og-image.jpg",
+  "telephone": "+234-806-577-6378",
+  "email": "contact@rebbies-store.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Victoria Island",
+    "addressLocality": "Lagos",
+    "addressRegion": "Lagos State",
+    "addressCountry": "NG"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "6.4281",
+    "longitude": "3.4219"
+  },
+  "openingHours": "Mo-Su 00:00-23:59",
+  "paymentAccepted": ["Credit Card", "Bank Transfer", "Cash"],
+  "priceRange": "₦₦₦",
+  "currenciesAccepted": "NGN",
+  "areaServed": {
+    "@type": "Country",
+    "name": "Nigeria"
+  },
+  "serviceArea": {
+    "@type": "GeoCircle",
+    "geoMidpoint": {
+      "@type": "GeoCoordinates",
+      "latitude": "9.082",
+      "longitude": "8.6753"
+    },
+    "geoRadius": "1000000"
+  },
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Rebbie's Store Products",
+    "itemListElement": [
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Product",
+          "name": "Fashion Bags",
+          "category": "Fashion Accessories"
+        }
+      },
+      {
+        "@type": "Offer", 
+        "itemOffered": {
+          "@type": "Product",
+          "name": "Jewelry",
+          "category": "Jewelry"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Product", 
+          "name": "Fragrances",
+          "category": "Beauty Products"
+        }
+      }
+    ]
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.9",
+    "reviewCount": "2500",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  "review": [
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Adunni Olatunji"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5"
+      },
+      "reviewBody": "Amazing authentic designer bags with certificates. Same-day delivery in Lagos is fantastic!"
+    }
+  ],
+  "sameAs": [
+    "https://instagram.com/rebbiesstore",
+    "https://facebook.com/rebbiesstore",
+    "https://twitter.com/rebbiesstore"
+  ]
+};
+
+export default function LandingPage() {
   return (
     <>
+      {/* Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
+
+      {/* Header with store navigation integration */}
       <Header />
-      
-      <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative bg-gradient-hero h-screen flex items-center justify-center text-white overflow-hidden">
-          <div className="absolute inset-0 bg-black/40"></div>
-          <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
-              Welcome to <span className="text-rebbie-purple-400">Rebbie's</span> Store
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 text-gray-200 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              Nigeria's Premier Fashion & Beauty Destination
+
+      {/* Main Landing Content */}
+      <main className="overflow-x-hidden">
+        
+        {/* Hero Section - First impression with featured product */}
+        <HeroSection />
+
+        {/* Featured Products - Direct integration with store catalog */}
+        <FeaturedProducts />
+
+        {/* Category Showcase - Navigation to specific product categories */}
+        <CategoryShowcase />
+
+        {/* Brand Story - Build trust and connection */}
+        <BrandStory />
+
+        {/* Testimonials - Social proof from Nigerian customers */}
+        <Testimonials />
+
+        {/* Newsletter - Email collection for marketing */}
+        <Newsletter />
+
+        {/* Final CTA Section before footer */}
+        <section className="py-16 bg-neutral-900 text-white">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+              Ready to Discover Your Next Favorite Piece?
+            </h2>
+            <p className="text-xl text-neutral-300 mb-8">
+              Join thousands of satisfied customers who trust Rebbie's Store for authentic luxury fashion
             </p>
-            <p className="text-lg mb-12 text-gray-300 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.4s' }}>
-              Discover luxury fashion bags, stunning jewelry, and premium fragrances. 
-              Shop authentic thrift pieces and brand new designer collections.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.6s' }}>
-              <Link
-                href="/products"
-                className="btn-base btn-primary text-lg px-8 py-4 hover:scale-105 transition-transform"
-              >
-                Shop Now
-              </Link>
-              <Link
-                href="/products/category/thrift-fashion-bags"
-                className="btn-base btn-outline text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-black"
-              >
-                Explore Thrift Collection
-              </Link>
-            </div>
-          </div>
-          
-          {/* Floating Elements */}
-          <div className="absolute top-20 left-10 w-20 h-20 bg-rebbie-purple-400/20 rounded-full animate-pulse-slow"></div>
-          <div className="absolute bottom-20 right-10 w-32 h-32 bg-rebbie-purple-600/20 rounded-full animate-bounce-subtle"></div>
-          <div className="absolute top-1/2 left-20 w-16 h-16 bg-white/10 rounded-full animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
-        </section>
-
-        {/* Categories Section */}
-        <section className="py-20 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-black mb-4">Shop by Category</h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Explore our carefully curated collections of fashion bags, jewelry, and fragrances
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Fashion Bags */}
-              <div className="group cursor-pointer">
-                <Link href="/products/category/fashion-bags">
-                  <div className="card-base overflow-hidden group-hover:shadow-purple-lg transition-all duration-500">
-                    <div className="h-64 bg-gradient-purple flex items-center justify-center">
-                      <div className="text-center text-white">
-                        <div className="text-6xl mb-4">👜</div>
-                        <h3 className="text-2xl font-bold">Fashion Bags</h3>
-                        <p className="text-purple-100">Thrift & New Collections</p>
-                      </div>
-                    </div>
-                    <div className="p-6">
-                      <h4 className="text-xl font-semibold mb-2">Premium Fashion Bags</h4>
-                      <p className="text-gray-600 mb-4">
-                        From vintage luxury pieces to contemporary designer bags
-                      </p>
-                      <div className="flex justify-between text-sm text-gray-500">
-                        <span>Starting from ₦15,000</span>
-                        <span className="text-rebbie-purple-600 font-semibold">View Collection →</span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-
-              {/* Jewelry */}
-              <div className="group cursor-pointer">
-                <Link href="/products/category/jewelry">
-                  <div className="card-base overflow-hidden group-hover:shadow-purple-lg transition-all duration-500">
-                    <div className="h-64 bg-gradient-accent flex items-center justify-center">
-                      <div className="text-center text-white">
-                        <div className="text-6xl mb-4">💎</div>
-                        <h3 className="text-2xl font-bold">Jewelry</h3>
-                        <p className="text-purple-100">African & Contemporary</p>
-                      </div>
-                    </div>
-                    <div className="p-6">
-                      <h4 className="text-xl font-semibold mb-2">Stunning Jewelry</h4>
-                      <p className="text-gray-600 mb-4">
-                        Necklaces, earrings, rings, and traditional African pieces
-                      </p>
-                      <div className="flex justify-between text-sm text-gray-500">
-                        <span>Starting from ₦8,000</span>
-                        <span className="text-rebbie-purple-600 font-semibold">View Collection →</span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-
-              {/* Fragrances */}
-              <div className="group cursor-pointer">
-                <Link href="/products/category/fragrances">
-                  <div className="card-base overflow-hidden group-hover:shadow-purple-lg transition-all duration-500">
-                    <div className="h-64 bg-black flex items-center justify-center">
-                      <div className="text-center text-white">
-                        <div className="text-6xl mb-4">🌸</div>
-                        <h3 className="text-2xl font-bold">Fragrances</h3>
-                        <p className="text-gray-300">Men's & Women's</p>
-                      </div>
-                    </div>
-                    <div className="p-6">
-                      <h4 className="text-xl font-semibold mb-2">Premium Fragrances</h4>
-                      <p className="text-gray-600 mb-4">
-                        Designer perfumes, colognes, and body mists
-                      </p>
-                      <div className="flex justify-between text-sm text-gray-500">
-                        <span>Starting from ₦12,000</span>
-                        <span className="text-rebbie-purple-600 font-semibold">View Collection →</span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-black mb-4">Why Choose Rebbie's Store?</h2>
-              <p className="text-xl text-gray-600">
-                We're committed to providing the best shopping experience in Nigeria
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-rebbie-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">🚚</span>
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Fast Delivery</h3>
-                <p className="text-gray-600">Same-day delivery in Lagos, nationwide shipping across Nigeria</p>
-              </div>
-
-              <div className="text-center">
-                <div className="w-16 h-16 bg-rebbie-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">✅</span>
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Authentic Products</h3>
-                <p className="text-gray-600">100% authentic products with certificates for luxury items</p>
-              </div>
-
-              <div className="text-center">
-                <div className="w-16 h-16 bg-rebbie-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">💳</span>
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Secure Payment</h3>
-                <p className="text-gray-600">Multiple payment options: Paystack, bank transfer, cash on delivery</p>
-              </div>
-
-              <div className="text-center">
-                <div className="w-16 h-16 bg-rebbie-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">📞</span>
-                </div>
-                <h3 className="text-xl font-semibold mb-2">24/7 Support</h3>
-                <p className="text-gray-600">WhatsApp support and customer service always available</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="py-20 bg-rebbie-purple-600 text-white">
-          <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-            <h2 className="text-4xl font-bold mb-4">Ready to Shop?</h2>
-            <p className="text-xl mb-8 text-purple-100">
-              Join thousands of happy customers who trust Rebbie's Store for their fashion and beauty needs
-            </p>
+            
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
+              <a 
                 href="/products"
-                className="btn-base bg-white text-rebbie-purple-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold"
+                className="btn btn-primary btn-lg group"
               >
                 Browse All Products
-              </Link>
+                <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </a>
+              
               <a
-                href="https://wa.me/2348065776378"
-                className="btn-base border-2 border-white text-white hover:bg-white hover:text-rebbie-purple-600 px-8 py-4 text-lg font-semibold"
+                href="https://wa.me/2348065776378?text=Hello%20Rebbie's%20Store!%20I'm%20interested%20in%20your%20products."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-outline border-white text-white hover:bg-white hover:text-neutral-900 btn-lg"
               >
                 Chat on WhatsApp
+                <svg className="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/>
+                </svg>
               </a>
+            </div>
+
+            {/* Trust indicators */}
+            <div className="mt-12 pt-8 border-t border-neutral-700">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+                <div>
+                  <div className="text-2xl font-bold text-rebbie-400">4.9⭐</div>
+                  <div className="text-sm text-neutral-400">Customer Rating</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-rebbie-400">10K+</div>
+                  <div className="text-sm text-neutral-400">Happy Customers</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-rebbie-400">36</div>
+                  <div className="text-sm text-neutral-400">States Delivered</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-rebbie-400">24/7</div>
+                  <div className="text-sm text-neutral-400">WhatsApp Support</div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
       </main>
 
+      {/* Footer with comprehensive links */}
       <Footer />
+
+      {/* Performance and Analytics Scripts */}
+      {/* Google Analytics - Add your GA tracking ID */}
+      {process.env.NODE_ENV === 'production' && (
+        <>
+          <script
+            async
+            src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+          />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
+              `,
+            }}
+          />
+        </>
+      )}
+
+      {/* Facebook Pixel - Add your pixel ID */}
+      {process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_FB_PIXEL_ID && (
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              !function(f,b,e,v,n,t,s)
+              {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+              n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+              if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+              n.queue=[];t=b.createElement(e);t.async=!0;
+              t.src=v;s=b.getElementsByTagName(e)[0];
+              s.parentNode.insertBefore(t,s)}(window, document,'script',
+              'https://connect.facebook.net/en_US/fbevents.js');
+              fbq('init', '${process.env.NEXT_PUBLIC_FB_PIXEL_ID}');
+              fbq('track', 'PageView');
+            `,
+          }}
+        />
+      )}
+
+      {/* Nigerian-specific optimizations */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            // Preconnect to Nigerian payment providers
+            if (typeof window !== 'undefined') {
+              const paystack = document.createElement('link');
+              paystack.rel = 'preconnect';
+              paystack.href = 'https://api.paystack.co';
+              document.head.appendChild(paystack);
+              
+              // Preload critical Nigerian fonts
+              const font = document.createElement('link');
+              font.rel = 'preload';
+              font.as = 'font';
+              font.type = 'font/woff2';
+              font.href = '/fonts/inter-nigerian.woff2';
+              font.crossOrigin = 'anonymous';
+              document.head.appendChild(font);
+            }
+          `,
+        }}
+      />
     </>
   );
 }
