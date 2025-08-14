@@ -13,7 +13,7 @@
     "medusa"
   ],
   "scripts": {
-    "migrations:run": "medusa medusa db:migrate",
+    "migrations:run": "medusa db:migrate",
     "build": "medusa build",
     "start": "medusa start",
     "seed": "medusa exec ./src/scripts/seed.ts",
