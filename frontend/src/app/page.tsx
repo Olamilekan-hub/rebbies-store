@@ -1,3 +1,4 @@
+// app/page.tsx (Updated to include Header with auth)
 import React from 'react';
 import { Metadata } from 'next';
 import Header from '@/components/common/Header';
@@ -169,18 +170,11 @@ const structuredData = {
   ]
 };
 
-export default function LandingPage() {
+// Client component wrapper for auth-aware header
+function HomePageContent() {
   return (
     <>
-      {/* Structured Data for SEO */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(structuredData),
-        }}
-      />
-
-      {/* Header with store navigation integration */}
+      {/* Header with auth integration */}
       <Header />
 
       {/* Main Landing Content */}
@@ -205,31 +199,31 @@ export default function LandingPage() {
         <Newsletter />
 
         {/* Final CTA Section before footer */}
-        <section className="py-16 bg-neutral-900 text-white">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+        <section className="py-16 text-white bg-neutral-900">
+          <div className="max-w-4xl px-4 mx-auto text-center sm:px-6 lg:px-8">
+            <h2 className="mb-4 text-3xl font-bold lg:text-4xl">
               Ready to Discover Your Next Favorite Piece?
             </h2>
-            <p className="text-xl text-neutral-300 mb-8">
+            <p className="mb-8 text-xl text-neutral-300">
               Join thousands of satisfied customers who trust Rebbie's Store for authentic luxury fashion
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col justify-center gap-4 sm:flex-row">
               <a 
                 href="/products"
                 className="btn btn-primary btn-lg group"
               >
                 Browse All Products
-                <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </a>
               
               <a
-                href="https://wa.me/2348065776378?text=Hello%20Rebbie's%20Store!%20I'm%20interested%20in%20your%20products."
+                href="https://wa.me/2349023821968?text=Hello%20Rebbie's%20Store!%20I'm%20interested%20in%20your%20products."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-outline border-white text-white hover:bg-white hover:text-neutral-900 btn-lg"
+                className="text-white border-white btn btn-outline hover:bg-white hover:text-neutral-900 btn-lg"
               >
                 Chat on WhatsApp
                 <svg className="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 24 24">
@@ -239,8 +233,8 @@ export default function LandingPage() {
             </div>
 
             {/* Trust indicators */}
-            <div className="mt-12 pt-8 border-t border-neutral-700">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+            <div className="pt-8 mt-12 border-t border-neutral-700">
+              <div className="grid grid-cols-2 gap-6 text-center lg:grid-cols-4">
                 <div>
                   <div className="text-2xl font-bold text-rebbie-400">4.9⭐</div>
                   <div className="text-sm text-neutral-400">Customer Rating</div>
@@ -265,6 +259,22 @@ export default function LandingPage() {
 
       {/* Footer with comprehensive links */}
       <Footer />
+    </>
+  );
+}
+
+export default function LandingPage() {
+  return (
+    <>
+      {/* Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
+
+      <HomePageContent />
 
       {/* Performance and Analytics Scripts */}
       {/* Google Analytics - Add your GA tracking ID */}

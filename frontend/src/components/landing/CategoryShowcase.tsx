@@ -304,7 +304,7 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ className }) => {
             </Link>
             
             <a
-              href="https://wa.me/2348065776378?text=Hi%20Rebbie's%20Store!%20I%20need%20help%20choosing%20products"
+              href="https://wa.me/2349023821968?text=Hi%20Rebbie's%20Store!%20I%20need%20help%20choosing%20products"
               target="_blank"
               rel="noopener noreferrer"
             >

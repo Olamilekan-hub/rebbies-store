@@ -374,7 +374,7 @@ const Testimonials: React.FC<TestimonialsProps> = ({ className }) => {
               Start Shopping
             </a>
             <a 
-              href="https://wa.me/2348065776378?text=Hi%20Rebbie's%20Store!%20I%20have%20questions%20about%20your%20products"
+              href="https://wa.me/2349023821968?text=Hi%20Rebbie's%20Store!%20I%20have%20questions%20about%20your%20products"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-outline btn-lg"

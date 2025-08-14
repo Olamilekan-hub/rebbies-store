@@ -1,8 +1,3 @@
-// ===============================
-// CART PAGE COMPONENT
-// frontend/src/app/cart/page.tsx
-// ===============================
-
 'use client';
 
 import React, { useState } from 'react';
@@ -20,10 +15,10 @@ import {
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { useCart, formatPrice, CartItem } from '@/context/CartContext';
-import Button from '@/components/ui/Button';
-import Card from '@/components/ui/Card';
-// import Badge from '@/components/ui/Badge';
-import Input  from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { Input } from '@/components/ui/Input';
 import clsx from 'clsx';
 
 // ===============================
@@ -97,7 +92,7 @@ const CartItemRow: React.FC<CartItemRowProps> = ({
               </h3>
               
               {/* Variant Information */}
-              {/* <div className="flex flex-wrap gap-2 mb-3">
+              <div className="flex flex-wrap gap-2 mb-3">
                 {item.variant.title && item.variant.title !== 'Default Title' && (
                   <Badge variant="secondary">
                     {item.variant.title}
@@ -108,7 +103,7 @@ const CartItemRow: React.FC<CartItemRowProps> = ({
                     {item.product.collection.title}
                   </Badge>
                 )}
-              </div> */}
+              </div>
 
               {/* Product Description */}
               {item.product.description && (

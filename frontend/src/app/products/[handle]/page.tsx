@@ -743,7 +743,7 @@ export default function ProductDetailsPage() {
                     <p className="text-white/90 text-sm">Chat with our style consultants on WhatsApp</p>
                   </div>
                   <a
-                    href={`https://wa.me/2348065776378?text=Hi! I'm interested in ${product.title}`}
+                    href={`https://wa.me/2349023821968?text=Hi! I'm interested in ${product.title}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
