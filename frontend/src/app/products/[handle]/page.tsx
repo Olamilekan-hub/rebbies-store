@@ -11,7 +11,7 @@ import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import { useProduct, useProductRecommendations } from '@/hooks/useProducts';
 import { useCart } from '@/hooks/useCart';
-import { toast } from '@/components/ui/Toast';
+import { useToast } from '@/components/ui/Toast';
 import { formatPrice } from '@/lib/medusa';
 import { RebbieProductVariant } from '@/lib/types';
 import {
@@ -59,9 +59,9 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, productTitle })
 
   if (!images || images.length === 0) {
     return (
-      <div className="aspect-square bg-neutral-100 rounded-2xl flex items-center justify-center">
+      <div className="flex items-center justify-center aspect-square bg-neutral-100 rounded-2xl">
         <div className="text-center text-neutral-400">
-          <div className="text-8xl mb-4">📦</div>
+          <div className="mb-4 text-8xl">📦</div>
           <p className="text-lg">No Images Available</p>
         </div>
       </div>
@@ -72,7 +72,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, productTitle })
     <div className="space-y-4">
       {/* Main Image */}
       <div className="relative">
-        <div className="aspect-square bg-neutral-100 rounded-2xl overflow-hidden group relative">
+        <div className="relative overflow-hidden aspect-square bg-neutral-100 rounded-2xl group">
           <Image
             src={images[selectedImage].url}
             alt={images[selectedImage].alt || productTitle}
@@ -98,13 +98,13 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, productTitle })
             <>
               <button
                 onClick={prevImage}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-white shadow-lg"
+                className="absolute flex items-center justify-center w-12 h-12 transition-all -translate-y-1/2 rounded-full shadow-lg opacity-0 left-4 top-1/2 bg-white/90 backdrop-blur-sm group-hover:opacity-100 hover:bg-white"
               >
                 <ChevronLeftIcon className="w-6 h-6 text-neutral-700" />
               </button>
               <button
                 onClick={nextImage}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-white shadow-lg"
+                className="absolute flex items-center justify-center w-12 h-12 transition-all -translate-y-1/2 rounded-full shadow-lg opacity-0 right-4 top-1/2 bg-white/90 backdrop-blur-sm group-hover:opacity-100 hover:bg-white"
               >
                 <ChevronRightIcon className="w-6 h-6 text-neutral-700" />
               </button>
@@ -112,8 +112,8 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, productTitle })
           )}
 
           {/* Zoom indicator */}
-          <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-            <div className="bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 flex items-center gap-2 text-sm text-neutral-700">
+          <div className="absolute transition-opacity opacity-0 top-4 right-4 group-hover:opacity-100">
+            <div className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-white/90 backdrop-blur-sm text-neutral-700">
               <MagnifyingGlassPlusIcon className="w-4 h-4" />
               Click to zoom
             </div>
@@ -141,7 +141,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, productTitle })
                 alt={`${productTitle} - view ${index + 1}`}
                 width={100}
                 height={100}
-                className="w-full h-full object-cover"
+                className="object-cover w-full h-full"
               />
             </button>
           ))}
@@ -150,18 +150,18 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, productTitle })
 
       {/* Image Modal */}
       {isZoomed && (
-        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90">
           <div className="relative max-w-4xl max-h-full">
             <Image
               src={images[selectedImage].url}
               alt={images[selectedImage].alt || productTitle}
               width={800}
               height={800}
-              className="max-w-full max-h-full object-contain"
+              className="object-contain max-w-full max-h-full"
             />
             <button
               onClick={() => setIsZoomed(false)}
-              className="absolute top-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-neutral-100"
+              className="absolute flex items-center justify-center w-10 h-10 bg-white rounded-full top-4 right-4 hover:bg-neutral-100"
             >
               ✕
             </button>
@@ -215,7 +215,7 @@ const VariantSelector: React.FC<VariantSelectorProps> = ({
     <div className="space-y-6">
       {Object.entries(variantOptions).map(([optionType, values]) => (
         <div key={optionType}>
-          <h4 className="font-medium text-neutral-900 mb-3 capitalize">
+          <h4 className="mb-3 font-medium capitalize text-neutral-900">
             {optionType}: <span className="text-rebbie-600">{selectedVariant?.options?.[optionType]}</span>
           </h4>
           <div className="flex flex-wrap gap-3">
@@ -241,7 +241,7 @@ const VariantSelector: React.FC<VariantSelectorProps> = ({
                 >
                   {value}
                   {!isAvailable && (
-                    <span className="block text-xs mt-1">Out of stock</span>
+                    <span className="block mt-1 text-xs">Out of stock</span>
                   )}
                 </button>
               );
@@ -296,7 +296,7 @@ const ProductReviews: React.FC<{ productId: string }> = ({ productId }) => {
       {/* Rating Summary */}
       <div className="flex items-center gap-8">
         <div className="text-center">
-          <div className="text-4xl font-bold text-neutral-900 mb-1">{averageRating}</div>
+          <div className="mb-1 text-4xl font-bold text-neutral-900">{averageRating}</div>
           <div className="flex items-center justify-center mb-1">
             {[...Array(5)].map((_, i) => (
               <StarIcon key={i} className="w-5 h-5 text-yellow-400 fill-current" />
@@ -308,14 +308,14 @@ const ProductReviews: React.FC<{ productId: string }> = ({ productId }) => {
         <div className="flex-1 space-y-2">
           {[5, 4, 3, 2, 1].map(stars => (
             <div key={stars} className="flex items-center gap-3">
-              <span className="text-sm w-8">{stars}★</span>
-              <div className="flex-1 bg-neutral-200 rounded-full h-2">
+              <span className="w-8 text-sm">{stars}★</span>
+              <div className="flex-1 h-2 rounded-full bg-neutral-200">
                 <div 
-                  className="bg-yellow-400 h-2 rounded-full"
+                  className="h-2 bg-yellow-400 rounded-full"
                   style={{ width: `${stars === 5 ? 70 : stars === 4 ? 20 : 5}%` }}
                 />
               </div>
-              <span className="text-sm text-neutral-600 w-8">
+              <span className="w-8 text-sm text-neutral-600">
                 {stars === 5 ? 17 : stars === 4 ? 5 : 2}
               </span>
             </div>
@@ -326,10 +326,10 @@ const ProductReviews: React.FC<{ productId: string }> = ({ productId }) => {
       {/* Individual Reviews */}
       <div className="space-y-6">
         {reviews.map(review => (
-          <div key={review.id} className="border-b border-neutral-200 pb-6">
+          <div key={review.id} className="pb-6 border-b border-neutral-200">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-rebbie-600 rounded-full flex items-center justify-center text-white font-bold">
+                <div className="flex items-center justify-center w-10 h-10 font-bold text-white rounded-full bg-rebbie-600">
                   {review.author.charAt(0)}
                 </div>
                 <div>
@@ -360,7 +360,7 @@ const ProductReviews: React.FC<{ productId: string }> = ({ productId }) => {
               </div>
             </div>
             
-            <p className="text-neutral-700 mb-3">{review.comment}</p>
+            <p className="mb-3 text-neutral-700">{review.comment}</p>
             
             <div className="flex items-center gap-4 text-sm text-neutral-600">
               <button className="hover:text-rebbie-600">👍 Helpful ({review.helpful})</button>
@@ -391,9 +391,10 @@ export default function ProductDetailsPage() {
   const [currency, setCurrency] = useState('NGN');
   const [activeTab, setActiveTab] = useState('description');
 
-  const { product, loading, error } = useProduct(handle, currency);
+  const { product, loading, error: productError } = useProduct(handle, currency);
   const { recommendations } = useProductRecommendations(product?.id || '', 4, currency);
   const { addItem, loading: addingToCart } = useCart();
+  const { success, error, warning, info, cartAdded } = useToast();
 
   // Set default variant when product loads
   useEffect(() => {
@@ -405,22 +406,22 @@ export default function ProductDetailsPage() {
   // Handle add to cart
   const handleAddToCart = async () => {
     if (!selectedVariant) {
-      toast.warning('Please select a variant');
+      warning('Please select a variant');
       return;
     }
 
     try {
       await addItem(selectedVariant, quantity);
-      toast.cartAdded(product?.title || 'Product');
-    } catch (error) {
-      toast.error('Failed to add to cart', 'Please try again');
+      cartAdded(product?.title || 'Product');
+    } catch (err) {
+      error('Failed to add to cart', 'Please try again');
     }
   };
 
   // Handle wishlist toggle
   const handleWishlistToggle = () => {
     setIsWishlisted(!isWishlisted);
-    toast.info(
+    info(
       isWishlisted ? 'Removed from wishlist' : 'Added to wishlist',
       product?.title
     );
@@ -437,11 +438,11 @@ export default function ProductDetailsPage() {
         });
       } catch (error) {
         navigator.clipboard.writeText(window.location.href);
-        toast.success('Link copied to clipboard');
+        success('Link copied to clipboard');
       }
     } else {
       navigator.clipboard.writeText(window.location.href);
-      toast.success('Link copied to clipboard');
+      success('Link copied to clipboard');
     }
   };
 
@@ -461,9 +462,9 @@ export default function ProductDetailsPage() {
     return (
       <>
         <Header />
-        <main className="min-h-screen flex items-center justify-center">
+        <main className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <div className="w-16 h-16 border-4 border-rebbie-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <div className="w-16 h-16 mx-auto mb-4 border-4 rounded-full border-rebbie-600 border-t-transparent animate-spin" />
             <p className="text-neutral-600">Loading product...</p>
           </div>
         </main>
@@ -472,18 +473,18 @@ export default function ProductDetailsPage() {
     );
   }
 
-  if (error || !product) {
+  if (productError || !product) {
     return (
       <>
         <Header />
-        <main className="min-h-screen flex items-center justify-center">
+        <main className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <div className="text-8xl mb-6">😞</div>
-            <h1 className="text-3xl font-bold text-neutral-900 mb-4">Product Not Found</h1>
-            <p className="text-neutral-600 mb-8 max-w-md">
+            <div className="mb-6 text-8xl">😞</div>
+            <h1 className="mb-4 text-3xl font-bold text-neutral-900">Product Not Found</h1>
+            <p className="max-w-md mb-8 text-neutral-600">
               The product you're looking for doesn't exist or may have been removed.
             </p>
-            <div className="flex gap-4 justify-center">
+            <div className="flex justify-center gap-4">
               <Link href="/products">
                 <Button>Browse Products</Button>
               </Link>
@@ -507,9 +508,9 @@ export default function ProductDetailsPage() {
       
       <main className="min-h-screen bg-white">
         {/* Breadcrumb */}
-        <div className="bg-neutral-50 py-4">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <nav className="text-sm text-neutral-500 flex items-center gap-2">
+        <div className="py-4 bg-neutral-50">
+          <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <nav className="flex items-center gap-2 text-sm text-neutral-500">
               <Link href="/" className="hover:text-rebbie-600">Home</Link>
               <span>/</span>
               <Link href="/products" className="hover:text-rebbie-600">Products</Link>
@@ -522,14 +523,14 @@ export default function ProductDetailsPage() {
                 </>
               )}
               <span>/</span>
-              <span className="text-neutral-900 font-medium line-clamp-1">{product.title}</span>
+              <span className="font-medium text-neutral-900 line-clamp-1">{product.title}</span>
             </nav>
           </div>
         </div>
 
         {/* Product Detail */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        <div className="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-16 lg:grid-cols-2">
             
             {/* Product Images */}
             <div>
@@ -542,7 +543,7 @@ export default function ProductDetailsPage() {
               {product.category_names && product.category_names.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {product.category_names.map(category => (
-                    <span key={category} className="bg-rebbie-100 text-rebbie-800 text-sm font-medium px-3 py-1 rounded-full">
+                    <span key={category} className="px-3 py-1 text-sm font-medium rounded-full bg-rebbie-100 text-rebbie-800">
                       {category}
                     </span>
                   ))}
@@ -551,7 +552,7 @@ export default function ProductDetailsPage() {
 
               {/* Title */}
               <div>
-                <h1 className="text-4xl font-bold text-neutral-900 mb-4">{product.title}</h1>
+                <h1 className="mb-4 text-4xl font-bold text-neutral-900">{product.title}</h1>
                 
                 {/* Rating */}
                 <div className="flex items-center gap-4">
@@ -559,10 +560,10 @@ export default function ProductDetailsPage() {
                     {[...Array(5)].map((_, i) => (
                       <StarIcon key={i} className="w-5 h-5 text-yellow-400 fill-current" />
                     ))}
-                    <span className="text-neutral-600 ml-2">(24 reviews)</span>
+                    <span className="ml-2 text-neutral-600">(24 reviews)</span>
                   </div>
                   <span className="text-neutral-300">•</span>
-                  <span className="text-sm text-green-600 font-medium">✓ In Stock</span>
+                  <span className="text-sm font-medium text-green-600">✓ In Stock</span>
                 </div>
               </div>
 
@@ -573,16 +574,16 @@ export default function ProductDetailsPage() {
                     {formattedPrice}
                   </span>
                   {/* Original price if on sale */}
-                  <span className="text-xl text-neutral-500 line-through">
+                  <span className="text-xl line-through text-neutral-500">
                     ₦580,000
                   </span>
-                  <span className="bg-red-500 text-white text-sm font-medium px-2 py-1 rounded-full">
+                  <span className="px-2 py-1 text-sm font-medium text-white bg-red-500 rounded-full">
                     Save 22%
                   </span>
                 </div>
                 
                 {product.variants && product.variants.length > 1 && (
-                  <p className="text-neutral-600 mt-2">
+                  <p className="mt-2 text-neutral-600">
                     Price varies by selected options
                   </p>
                 )}
@@ -591,16 +592,16 @@ export default function ProductDetailsPage() {
               {/* Badges */}
               <div className="flex flex-wrap gap-3">
                 {product.is_thrift && (
-                  <span className="bg-green-100 text-green-800 text-sm px-4 py-2 rounded-full font-medium flex items-center gap-2">
+                  <span className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-green-800 bg-green-100 rounded-full">
                     ♻️ Sustainable Choice
                   </span>
                 )}
                 {product.condition && (
-                  <span className="bg-blue-100 text-blue-800 text-sm px-4 py-2 rounded-full font-medium">
+                  <span className="px-4 py-2 text-sm font-medium text-blue-800 bg-blue-100 rounded-full">
                     Condition: {product.condition}
                   </span>
                 )}
-                <span className="bg-rebbie-100 text-rebbie-800 text-sm px-4 py-2 rounded-full font-medium">
+                <span className="px-4 py-2 text-sm font-medium rounded-full bg-rebbie-100 text-rebbie-800">
                   🏆 Authenticity Guaranteed
                 </span>
               </div>
@@ -608,7 +609,7 @@ export default function ProductDetailsPage() {
               {/* Description */}
               {product.description && (
                 <div className="prose prose-neutral">
-                  <p className="text-lg text-neutral-700 leading-relaxed">
+                  <p className="text-lg leading-relaxed text-neutral-700">
                     {product.description}
                   </p>
                 </div>
@@ -626,14 +627,14 @@ export default function ProductDetailsPage() {
 
               {/* Quantity Selector */}
               <div>
-                <label className="block text-lg font-medium text-neutral-900 mb-3">
+                <label className="block mb-3 text-lg font-medium text-neutral-900">
                   Quantity
                 </label>
                 <div className="flex items-center">
-                  <div className="flex items-center border-2 border-neutral-300 rounded-xl overflow-hidden">
+                  <div className="flex items-center overflow-hidden border-2 border-neutral-300 rounded-xl">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="p-3 hover:bg-neutral-50 transition-colors"
+                      className="p-3 transition-colors hover:bg-neutral-50"
                     >
                       <MinusIcon className="w-5 h-5" />
                     </button>
@@ -642,7 +643,7 @@ export default function ProductDetailsPage() {
                     </span>
                     <button
                       onClick={() => setQuantity(quantity + 1)}
-                      className="p-3 hover:bg-neutral-50 transition-colors"
+                      className="p-3 transition-colors hover:bg-neutral-50"
                     >
                       <PlusIcon className="w-5 h-5" />
                     </button>
@@ -665,7 +666,7 @@ export default function ProductDetailsPage() {
                 >
                   {addingToCart ? (
                     <div className="flex items-center justify-center gap-3">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
                       Adding to Cart...
                     </div>
                   ) : (
@@ -701,7 +702,7 @@ export default function ProductDetailsPage() {
               </div>
 
               {/* Features */}
-              <div className="bg-neutral-50 rounded-2xl p-6 space-y-4">
+              <div className="p-6 space-y-4 bg-neutral-50 rounded-2xl">
                 <div className="flex items-center gap-4 text-neutral-700">
                   <TruckIcon className="w-6 h-6 text-green-600" />
                   <div>
@@ -733,14 +734,14 @@ export default function ProductDetailsPage() {
               </div>
 
               {/* WhatsApp Quick Contact */}
-              <div className="bg-gradient-to-r from-nigeria-whatsapp to-green-600 rounded-2xl p-6 text-white">
+              <div className="p-6 text-white bg-gradient-to-r from-nigeria-whatsapp to-green-600 rounded-2xl">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white/20">
                     <PhoneIcon className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold mb-1">Have questions about this product?</h3>
-                    <p className="text-white/90 text-sm">Chat with our style consultants on WhatsApp</p>
+                    <h3 className="mb-1 font-semibold">Have questions about this product?</h3>
+                    <p className="text-sm text-white/90">Chat with our style consultants on WhatsApp</p>
                   </div>
                   <a
                     href={`https://wa.me/2349023821968?text=Hi! I'm interested in ${product.title}`}
@@ -758,11 +759,11 @@ export default function ProductDetailsPage() {
         </div>
 
         {/* Product Details Tabs */}
-        <div className="bg-neutral-50 py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="py-16 bg-neutral-50">
+          <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
             {/* Tab Navigation */}
             <div className="flex justify-center mb-12">
-              <div className="bg-white rounded-2xl p-2 shadow-sm">
+              <div className="p-2 bg-white shadow-sm rounded-2xl">
                 {[
                   { id: 'description', label: 'Description' },
                   { id: 'reviews', label: 'Reviews (24)' },
@@ -789,14 +790,14 @@ export default function ProductDetailsPage() {
             <Card className="p-8 lg:p-12">
               {activeTab === 'description' && (
                 <div className="prose prose-lg max-w-none">
-                  <h3 className="text-2xl font-bold mb-6">Product Details</h3>
-                  <p className="text-neutral-700 leading-relaxed mb-6">
+                  <h3 className="mb-6 text-2xl font-bold">Product Details</h3>
+                  <p className="mb-6 leading-relaxed text-neutral-700">
                     {product.description || 'Detailed product description would be shown here.'}
                   </p>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                  <div className="grid grid-cols-1 gap-8 mt-8 md:grid-cols-2">
                     <div>
-                      <h4 className="font-semibold mb-4">Specifications</h4>
+                      <h4 className="mb-4 font-semibold">Specifications</h4>
                       <ul className="space-y-2 text-neutral-700">
                         <li>• Material: Premium leather</li>
                         <li>• Dimensions: 25cm x 15cm x 8cm</li>
@@ -806,7 +807,7 @@ export default function ProductDetailsPage() {
                       </ul>
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-4">Care Instructions</h4>
+                      <h4 className="mb-4 font-semibold">Care Instructions</h4>
                       <ul className="space-y-2 text-neutral-700">
                         <li>• Clean with soft, dry cloth</li>
                         <li>• Avoid exposure to water</li>
@@ -820,18 +821,18 @@ export default function ProductDetailsPage() {
 
               {activeTab === 'reviews' && (
                 <div>
-                  <h3 className="text-2xl font-bold mb-6">Customer Reviews</h3>
+                  <h3 className="mb-6 text-2xl font-bold">Customer Reviews</h3>
                   <ProductReviews productId={product.id} />
                 </div>
               )}
 
               {activeTab === 'shipping' && (
                 <div className="prose prose-lg max-w-none">
-                  <h3 className="text-2xl font-bold mb-6">Shipping & Returns</h3>
+                  <h3 className="mb-6 text-2xl font-bold">Shipping & Returns</h3>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                     <div>
-                      <h4 className="font-semibold mb-4">Shipping Options</h4>
+                      <h4 className="mb-4 font-semibold">Shipping Options</h4>
                       <div className="space-y-4">
                         <div className="flex items-center gap-3">
                           <ClockIcon className="w-5 h-5 text-green-600" />
@@ -858,7 +859,7 @@ export default function ProductDetailsPage() {
                     </div>
                     
                     <div>
-                      <h4 className="font-semibold mb-4">Return Policy</h4>
+                      <h4 className="mb-4 font-semibold">Return Policy</h4>
                       <ul className="space-y-2 text-neutral-700">
                         <li>• 30-day return window</li>
                         <li>• Items must be in original condition</li>
@@ -873,9 +874,9 @@ export default function ProductDetailsPage() {
 
               {activeTab === 'authenticity' && (
                 <div className="prose prose-lg max-w-none">
-                  <h3 className="text-2xl font-bold mb-6">Authenticity Guarantee</h3>
+                  <h3 className="mb-6 text-2xl font-bold">Authenticity Guarantee</h3>
                   
-                  <div className="bg-green-50 border border-green-200 rounded-2xl p-6 mb-8">
+                  <div className="p-6 mb-8 border border-green-200 bg-green-50 rounded-2xl">
                     <div className="flex items-center gap-3 mb-4">
                       <ShieldCheckIcon className="w-8 h-8 text-green-600" />
                       <div>
@@ -885,9 +886,9 @@ export default function ProductDetailsPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                     <div>
-                      <h4 className="font-semibold mb-4">Our Authentication Process</h4>
+                      <h4 className="mb-4 font-semibold">Our Authentication Process</h4>
                       <ol className="space-y-3 text-neutral-700">
                         <li>1. Expert inspection by certified authenticators</li>
                         <li>2. Serial number and date code verification</li>
@@ -898,7 +899,7 @@ export default function ProductDetailsPage() {
                     </div>
                     
                     <div>
-                      <h4 className="font-semibold mb-4">What You Get</h4>
+                      <h4 className="mb-4 font-semibold">What You Get</h4>
                       <ul className="space-y-2 text-neutral-700">
                         <li>• Official authenticity certificate</li>
                         <li>• Digital verification code</li>
@@ -917,23 +918,23 @@ export default function ProductDetailsPage() {
         {/* Related Products */}
         {recommendations.length > 0 && (
           <section className="py-16 bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 className="text-3xl font-bold text-neutral-900 mb-8 text-center">
+            <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+              <h2 className="mb-8 text-3xl font-bold text-center text-neutral-900">
                 You Might Also Like
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 {recommendations.map(product => (
-                  <Card key={product.id} className="group overflow-hidden hover:shadow-xl transition-all duration-300">
-                    <div className="aspect-square bg-neutral-100 relative">
-                      <div className="w-full h-full flex items-center justify-center text-neutral-400">
+                  <Card key={product.id} className="overflow-hidden transition-all duration-300 group hover:shadow-xl">
+                    <div className="relative aspect-square bg-neutral-100">
+                      <div className="flex items-center justify-center w-full h-full text-neutral-400">
                         <div className="text-center">
-                          <div className="text-4xl mb-2">📦</div>
+                          <div className="mb-2 text-4xl">📦</div>
                           <div className="text-sm">{product.title}</div>
                         </div>
                       </div>
                     </div>
                     <div className="p-4">
-                      <h3 className="font-medium line-clamp-2 mb-2">{product.title}</h3>
+                      <h3 className="mb-2 font-medium line-clamp-2">{product.title}</h3>
                       <div className="text-lg font-bold">
                         {formatPrice(product.variants?.[0]?.prices?.[0]?.amount || 0, 'NGN')}
                       </div>

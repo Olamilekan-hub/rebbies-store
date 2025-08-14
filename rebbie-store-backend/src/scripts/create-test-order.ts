@@ -106,7 +106,7 @@ export default async function createTestOrder({ container }: ExecArgs) {
 
     console.log("✅ Test cart created successfully!");
     console.log("🆔 Cart ID:", cart.id);
-    console.log("💰 Cart total: ₦", (cart.total || price_amount) / 100);
+    console.log("💰 Cart total: ₦", (Number(cart.total) || Number(price_amount)) / 100);
     console.log("📧 Customer email:", customer.email);
     
     console.log("\n🎯 Next steps - Complete this order through:");
