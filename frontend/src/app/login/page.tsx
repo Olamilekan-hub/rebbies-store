@@ -1,14 +1,14 @@
-
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/context/AuthContext';
 import { FirebaseError } from 'firebase/app';
 
-const LoginPage: React.FC = () => {
+// Create a separate component for the login form that uses useSearchParams
+const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -80,6 +80,142 @@ const LoginPage: React.FC = () => {
   };
 
   return (
+    <>
+      {/* Success Message */}
+      {success && (
+        <div className="p-4 border border-green-200 rounded-lg bg-green-50">
+          <p className="text-sm text-green-800">{success}</p>
+        </div>
+      )}
+
+      {/* Error Message */}
+      {error && (
+        <div className="p-4 border border-red-200 rounded-lg bg-red-50">
+          <p className="text-sm text-red-800">{error}</p>
+        </div>
+      )}
+
+      {/* Login Form */}
+      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <div className="space-y-4">
+          {/* Email */}
+          <div>
+            <label htmlFor="email" className="block mb-2 text-sm font-medium text-neutral-700">
+              Email address
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 transition-colors border rounded-lg border-neutral-300 focus:ring-2 focus:ring-rebbie-500 focus:border-rebbie-500"
+              placeholder="Enter your email"
+            />
+          </div>
+
+          {/* Password */}
+          <div>
+            <label htmlFor="password" className="block mb-2 text-sm font-medium text-neutral-700">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 pr-12 transition-colors border rounded-lg border-neutral-300 focus:ring-2 focus:ring-rebbie-500 focus:border-rebbie-500"
+                placeholder="Enter your password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute transform -translate-y-1/2 right-3 top-1/2 text-neutral-400 hover:text-neutral-600"
+              >
+                {showPassword ? (
+                  <EyeSlashIcon className="w-5 h-5" />
+                ) : (
+                  <EyeIcon className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Forgot Password Link */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <input
+              id="remember-me"
+              name="remember-me"
+              type="checkbox"
+              className="w-4 h-5 rounded text-rebbie-600 focus:ring-rebbie-500 border-neutral-300"
+            />
+            <label htmlFor="remember-me" className="block ml-2 text-sm text-neutral-700">
+              Remember me
+            </label>
+          </div>
+
+          <Link
+            href="/forgot-password"
+            className="text-sm font-medium text-rebbie-600 hover:text-rebbie-500"
+          >
+            Forgot your password?
+          </Link>
+        </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="flex items-center justify-center w-full px-4 py-3 text-base font-medium text-white transition-colors border border-transparent rounded-lg bg-rebbie-600 hover:bg-rebbie-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rebbie-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? (
+            <>
+              <svg className="w-5 h-5 mr-3 -ml-1 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Signing in...
+            </>
+          ) : (
+            'Sign in'
+          )}
+        </button>
+      </form>
+    </>
+  );
+};
+
+// Loading fallback component
+const LoginFormFallback = () => (
+  <div className="mt-8 space-y-6">
+    <div className="space-y-4">
+      <div>
+        <div className="block mb-2 text-sm font-medium text-neutral-700">
+          Email address
+        </div>
+        <div className="w-full h-12 rounded-lg bg-neutral-200 animate-pulse" />
+      </div>
+      <div>
+        <div className="block mb-2 text-sm font-medium text-neutral-700">
+          Password
+        </div>
+        <div className="w-full h-12 rounded-lg bg-neutral-200 animate-pulse" />
+      </div>
+    </div>
+    <div className="w-full h-12 rounded-lg bg-neutral-200 animate-pulse" />
+  </div>
+);
+
+const LoginPage: React.FC = () => {
+  return (
     <div className="flex items-center justify-center min-h-screen px-4 py-12 bg-neutral-50 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
         {/* Header */}
@@ -99,114 +235,10 @@ const LoginPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Success Message */}
-        {success && (
-          <div className="p-4 border border-green-200 rounded-lg bg-green-50">
-            <p className="text-sm text-green-800">{success}</p>
-          </div>
-        )}
-
-        {/* Error Message */}
-        {error && (
-          <div className="p-4 border border-red-200 rounded-lg bg-red-50">
-            <p className="text-sm text-red-800">{error}</p>
-          </div>
-        )}
-
-        {/* Login Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            {/* Email */}
-            <div>
-              <label htmlFor="email" className="block mb-2 text-sm font-medium text-neutral-700">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 transition-colors border rounded-lg border-neutral-300 focus:ring-2 focus:ring-rebbie-500 focus:border-rebbie-500"
-                placeholder="Enter your email"
-              />
-            </div>
-
-            {/* Password */}
-            <div>
-              <label htmlFor="password" className="block mb-2 text-sm font-medium text-neutral-700">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 pr-12 transition-colors border rounded-lg border-neutral-300 focus:ring-2 focus:ring-rebbie-500 focus:border-rebbie-500"
-                  placeholder="Enter your password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute transform -translate-y-1/2 right-3 top-1/2 text-neutral-400 hover:text-neutral-600"
-                >
-                  {showPassword ? (
-                    <EyeSlashIcon className="w-5 h-5" />
-                  ) : (
-                    <EyeIcon className="w-5 h-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Forgot Password Link */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="w-4 h-4 rounded text-rebbie-600 focus:ring-rebbie-500 border-neutral-300"
-              />
-              <label htmlFor="remember-me" className="block ml-2 text-sm text-neutral-700">
-                Remember me
-              </label>
-            </div>
-
-            <Link
-              href="/forgot-password"
-              className="text-sm font-medium text-rebbie-600 hover:text-rebbie-500"
-            >
-              Forgot your password?
-            </Link>
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="flex items-center justify-center w-full px-4 py-3 text-base font-medium text-white transition-colors border border-transparent rounded-lg bg-rebbie-600 hover:bg-rebbie-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rebbie-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? (
-              <>
-                <svg className="w-5 h-5 mr-3 -ml-1 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Signing in...
-              </>
-            ) : (
-              'Sign in'
-            )}
-          </button>
-        </form>
+        {/* Wrap the form component in Suspense */}
+        <Suspense fallback={<LoginFormFallback />}>
+          <LoginForm />
+        </Suspense>
 
         {/* Register Link */}
         <div className="text-center">
