@@ -140,7 +140,7 @@ const ToastContainer: React.FC = () => {
   const { toasts } = useToast();
 
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
+    <div className="fixed z-50 space-y-2 top-4 right-4">
       {toasts.map(toast => (
         <ToastItem key={toast.id} toast={toast} />
       ))}
@@ -208,7 +208,7 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast }) => {
             {toast.title}
           </h4>
           {toast.message && (
-            <p className="text-sm text-neutral-600 mt-1">
+            <p className="mt-1 text-sm text-neutral-600">
               {toast.message}
             </p>
           )}
@@ -216,7 +216,7 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast }) => {
           {toast.action && (
             <button
               onClick={toast.action.onClick}
-              className="text-sm font-medium text-rebbie-600 hover:text-rebbie-700 mt-2 underline"
+              className="mt-2 text-sm font-medium underline text-rebbie-600 hover:text-rebbie-700"
             >
               {toast.action.label}
             </button>
@@ -225,7 +225,7 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast }) => {
         
         <button
           onClick={() => removeToast(toast.id)}
-          className="flex-shrink-0 p-1 rounded-lg hover:bg-neutral-100 transition-colors"
+          className="flex-shrink-0 p-1 transition-colors rounded-lg hover:bg-neutral-100"
         >
           <XMarkIcon className="w-4 h-4 text-neutral-400" />
         </button>
@@ -233,182 +233,3 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast }) => {
     </div>
   );
 };
-
-// ===============================
-// USAGE EXAMPLES & INTEGRATION
-// ===============================
-
-// Update your main layout.tsx to include ToastProvider
-/*
-'use client';
-
-import React from 'react';
-import { Inter } from 'next/font/google';
-import './globals.css';
-import { CartProvider } from '@/context/CartContext';
-import { ToastProvider } from '@/components/ui/Toast';
-import { CartDrawer } from '@/components/cart/CartDrawer';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
-
-const inter = Inter({ subsets: ['latin'] });
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="en">
-      <body className={inter.className}>
-        <ToastProvider>
-          <CartProvider>
-            <div className="min-h-screen flex flex-col">
-              <Header />
-              <main className="flex-1">
-                {children}
-              </main>
-              <Footer />
-            </div>
-            
-            <CartDrawer />
-          </CartProvider>
-        </ToastProvider>
-      </body>
-    </html>
-  );
-}
-*/
-
-// ===============================
-// UPDATED CART CONTEXT WITH TOASTS
-// ===============================
-
-// Update the addItem function in CartContext.tsx:
-/*
-const addItem = async (variant: RebbieProductVariant, quantity: number, product?: RebbieProduct) => {
-  dispatch({ type: 'SET_LOADING', payload: true });
-  
-  try {
-    if (!product) {
-      throw new Error('Product information is required');
-    }
-
-    dispatch({ 
-      type: 'ADD_ITEM', 
-      payload: { variant, quantity, product }
-    });
-
-    // Show success toast
-    const toast = useToast(); // You'd need to access this properly
-    toast.cartAdded(product.title, {
-      label: 'View Cart',
-      onClick: () => toggleCart()
-    });
-
-  } catch (error) {
-    console.error('Error adding item to cart:', error);
-    const toast = useToast();
-    toast.error('Failed to add to cart', 'Please try again');
-    throw error;
-  } finally {
-    dispatch({ type: 'SET_LOADING', payload: false });
-  }
-};
-*/
-
-// ===============================
-// EXAMPLE USAGE IN PRODUCT DETAILS
-// ===============================
-
-/*
-// In your ProductDetailsPage component:
-
-import { useToast } from '@/components/ui/Toast';
-
-export default function ProductDetailsPage() {
-  const toast = useToast();
-  const { addItem, loading: addingToCart } = useCart();
-
-  const handleAddToCart = async () => {
-    if (!selectedVariant) {
-      toast.warning('Please select a variant', 'Choose size, color, or other options');
-      return;
-    }
-
-    try {
-      await addItem(selectedVariant, quantity, product);
-      // Toast is automatically shown by the cart context
-    } catch (error) {
-      toast.error('Failed to add to cart', 'Please try again');
-    }
-  };
-
-  return (
-    // ... your component JSX
-  );
-}
-*/
-
-// ===============================
-// CART INTEGRATION SUMMARY
-// ===============================
-
-/*
-CART SYSTEM COMPONENTS CREATED:
-
-1. **CartContext & Hook** (/context/CartContext.tsx)
-   - Global cart state management
-   - Add/remove/update items
-   - Currency & shipping location switching
-   - Local storage persistence
-   - Nigerian-specific shipping calculations
-
-2. **CartDrawer** (/components/cart/CartDrawer.tsx)
-   - Slide-out cart from right side
-   - Item management with quantity controls
-   - Shipping calculator
-   - Order summary with totals
-   - Direct checkout access
-
-3. **CartPage** (/app/cart/page.tsx)
-   - Full-page cart view
-   - Detailed item management
-   - Promo code support
-   - Wishlist integration
-   - Enhanced order summary
-
-4. **CartIcon & Integration** (/components/cart/CartIcon.tsx)
-   - Header cart icon with count badge
-   - Mini cart preview on hover
-   - Mobile floating cart button
-   - Header integration
-
-5. **Toast System** (/components/ui/Toast.tsx)
-   - Cart action notifications
-   - Success/error/warning toasts
-   - Action buttons in toasts
-   - Auto-dismiss functionality
-
-FEATURES INCLUDED:
-✅ Nigerian currency support (NGN primary)
-✅ Shipping cost calculation (Lagos/Nigeria/International)
-✅ Free shipping thresholds
-✅ Mobile-first responsive design
-✅ Cart persistence in localStorage
-✅ Real-time cart count updates
-✅ Quantity controls with validation
-✅ Product variant support
-✅ Cart drawer with smooth animations
-✅ Mini cart preview on hover
-✅ Toast notifications for actions
-✅ Promo code support framework
-✅ Wishlist integration hooks
-✅ Trust badges and payment methods
-
-NEXT STEPS:
-- Checkout Process (Multi-step with Nigerian payment methods)
-- Authentication System (Firebase with phone/email)
-- User Account Dashboard
-- Order Management System
-*/
