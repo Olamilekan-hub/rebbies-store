@@ -123,7 +123,7 @@ export default async function createTestOrder({ container }: ExecArgs) {
     console.log("   Variant:", variant.title || variant.id);
     console.log("   Quantity: 1");
     console.log("   Unit Price: ₦", price_amount / 100);
-    console.log("   Total: ₦", (cart.total || price_amount) / 100);
+    console.log("   Total: ₦", (Number(cart.total) || Number(price_amount)) / 100);
 
     // Show useful next steps
     console.log("\n🔧 Useful commands:");

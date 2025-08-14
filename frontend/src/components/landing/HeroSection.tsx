@@ -26,12 +26,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ className }) => {
       ctaLink: "/products",
       secondaryCtaText: "Watch Story",
       heroImage: "/hero-bag-1.jpg",
-      layout: "left", // content on left, image on right
-      stats: [
-        { label: "Products", value: "500+" },
-        { label: "Happy Customers", value: "10K+" },
-        { label: "States Covered", value: "36" },
-      ]
+      layout: "left", 
+      badge: "Discover Luxury"
     },
     {
       id: 2,
@@ -71,7 +67,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ className }) => {
   }, []);
 
   const ContentSection = () => (
-    <div className="space-y-8 text-white animate-fade-in-up">
+    <div className="space-y-4 text-white animate-fade-in-up">
       {/* Badge */}
       {currentHero.badge && (
         <div className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-full bg-white/10 backdrop-blur-sm border-white/20">
@@ -81,7 +77,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ className }) => {
       )}
 
       {/* Main Heading */}
-      <div className="space-y-4">
+      <div className="space-y-8">
         <h1 className="font-bold leading-tight text-white text-display-xl">
           {currentHero.title.split(' ').slice(0, 2).join(' ')}{' '}
           <span className="text-rebbie-400">
@@ -97,18 +93,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ className }) => {
           {currentHero.description}
         </p>
       </div>
-
-      {/* Stats */}
-      {currentHero.stats && (
-        <div className="flex flex-wrap gap-6">
-          {currentHero.stats.map((stat, index) => (
-            <div key={index} className="text-center">
-              <div className="text-2xl font-bold text-rebbie-400">{stat.value}</div>
-              <div className="text-sm text-neutral-400">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-      )}
 
       {/* CTAs */}
       <div className="flex flex-col gap-4 sm:flex-row">
@@ -215,7 +199,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ className }) => {
 
         {/* Main Content Container */}
         <div className="relative z-20 px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-          <div className="grid items-center min-h-screen grid-cols-1 gap-12 py-20 transition-all duration-500 lg:grid-cols-2">
+          <div className="grid items-center min-h-screen grid-cols-1 gap-12 py-10 transition-all duration-500 lg:grid-cols-2">
             
             {/* Dynamic Layout based on slide */}
             {currentHero.layout === 'left' ? (
