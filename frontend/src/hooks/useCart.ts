@@ -1,8 +1,3 @@
-// ===============================
-// CART CONTEXT & HOOK
-// frontend/src/context/CartContext.tsx & src/hooks/useCart.ts
-// ===============================
-
 'use client';
 
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
@@ -371,10 +366,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     changeShippingLocation
   };
 
-  return (
-    <CartContext.Provider value={contextValue}>
-      {children}
-    </CartContext.Provider>
+  return React.createElement(
+    CartContext.Provider,
+    { value: contextValue },
+    children
   );
 };
 
