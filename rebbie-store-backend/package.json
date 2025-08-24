@@ -13,8 +13,9 @@
     "medusa"
   ],
   "scripts": {
+    "build": "medusa build && medusa build:admin",
+    "build:admin": "medusa build:admin",
     "migrations:run": "medusa db:migrate",
-    "build": "medusa build",
     "start": "medusa start",
     "seed": "medusa exec ./src/scripts/seed.ts",
     "dev": "medusa develop",
