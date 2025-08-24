@@ -15,7 +15,7 @@ export default defineConfig({
     }
   },
   admin: {
-    disable: false,
+    disable: process.env.NODE_ENV === "production",
     path: "/app",
   },
   modules: [
