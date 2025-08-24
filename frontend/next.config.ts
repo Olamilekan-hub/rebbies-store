@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  output: 'standalone',
+  trailingSlash: false,
+  generateStaticParams: false,
 };
 
 export default nextConfig;
