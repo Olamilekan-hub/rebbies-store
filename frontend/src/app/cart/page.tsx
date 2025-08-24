@@ -5,10 +5,9 @@
 
 'use client';
 
-// Force dynamic rendering for this page
 export const dynamic = 'force-dynamic';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { 
@@ -366,6 +365,13 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
 // ===============================
 
 export default function CartPage() {
+  const [isClient, setIsClient] = useState(false);
+  
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const {
     state,
     updateQuantity,
@@ -385,6 +391,22 @@ export default function CartPage() {
 
   // Mock wishlist state (this would come from a real wishlist context)
   const [wishlistedItems, setWishlistedItems] = useState<string[]>([]);
+
+  // Show loading state during hydration
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-neutral-50 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="animate-pulse">
+              <div className="h-8 bg-neutral-300 rounded w-64 mx-auto mb-4"></div>
+              <div className="h-4 bg-neutral-300 rounded w-48 mx-auto"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleWishlistToggle = (productId: string) => {
     setWishlistedItems(prev =>
