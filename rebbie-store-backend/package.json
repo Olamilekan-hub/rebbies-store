@@ -13,7 +13,7 @@
     "medusa"
   ],
   "scripts": {
-    "build": "medusa build && ls -la dist/",
+    "build": "medusa build && find . -name '*.html' -o -name 'admin' -type d && ls -la .medusa/",
     "build:admin": "medusa build",
     "build:production": "NODE_ENV=production medusa build",
     "migrations:run": "medusa db:migrate",
