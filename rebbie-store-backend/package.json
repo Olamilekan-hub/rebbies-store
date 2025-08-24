@@ -13,11 +13,11 @@
     "medusa"
   ],
   "scripts": {
-    "build": "medusa build && find . -name '*.html' -o -name 'admin' -type d && ls -la .medusa/",
+    "build": "medusa build && mkdir -p dist && cp -r .medusa/* dist/ 2>/dev/null || true && ls -la dist/",
     "build:admin": "medusa build",
     "build:production": "NODE_ENV=production medusa build",
     "migrations:run": "medusa db:migrate",
-    "start": "medusa start",
+    "start": "MEDUSA_ADMIN_ONBOARDING_TYPE=default medusa start",
     "seed": "medusa exec ./src/scripts/seed.ts",
     "dev": "medusa develop",
     "test:integration:http": "TEST_TYPE=integration:http NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit",
