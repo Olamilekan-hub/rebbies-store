@@ -19,7 +19,8 @@ import {
   TagIcon
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
-import { useCart, formatPrice, CartItem } from '@/context/CartContext';
+import { useCart, formatPrice } from '@/hooks/useCart';
+import { CartItem } from '@/hooks/useCart';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 // import Badge from '@/components/ui/Badge';

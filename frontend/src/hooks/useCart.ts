@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { RebbieProductVariant, RebbieProduct } from '@/lib/types';
+import { createCart, getCart, addToCart, updateCartItem, removeFromCart, getNigeriaRegion } from '@/lib/medusa';
 
 // ===============================
 // TYPES
@@ -23,6 +24,8 @@ export interface CartState {
   loading: boolean;
   currency: 'NGN' | 'USD' | 'EUR';
   shippingLocation: 'lagos' | 'nigeria' | 'international';
+  medusaCartId: string | null;
+  medusaCart: any | null;
 }
 
 export interface CartContextType {
@@ -39,6 +42,7 @@ export interface CartContextType {
   getShippingCost: () => number;
   changeCurrency: (currency: 'NGN' | 'USD' | 'EUR') => void;
   changeShippingLocation: (location: 'lagos' | 'nigeria' | 'international') => void;
+  initializeMedusaCart: () => Promise<void>;
 }
 
 // ===============================
@@ -56,7 +60,9 @@ type CartAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'CHANGE_CURRENCY'; payload: 'NGN' | 'USD' | 'EUR' }
   | { type: 'CHANGE_SHIPPING_LOCATION'; payload: 'lagos' | 'nigeria' | 'international' }
-  | { type: 'LOAD_CART'; payload: CartItem[] };
+  | { type: 'LOAD_CART'; payload: CartItem[] }
+  | { type: 'SET_MEDUSA_CART'; payload: { cartId: string; cart: any } }
+  | { type: 'SYNC_FROM_MEDUSA'; payload: any };
 
 const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
@@ -168,6 +174,32 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         items: action.payload
       };
 
+    case 'SET_MEDUSA_CART':
+      return {
+        ...state,
+        medusaCartId: action.payload.cartId,
+        medusaCart: action.payload.cart
+      };
+
+    case 'SYNC_FROM_MEDUSA':
+      // Convert MedusaJS cart items to local cart format
+      const medusaItems = action.payload.items || [];
+      const localItems: CartItem[] = medusaItems.map((item: any) => ({
+        id: item.id,
+        variantId: item.variant_id,
+        productId: item.product_id,
+        quantity: item.quantity,
+        variant: item.variant,
+        product: item.product || item.variant?.product,
+        addedAt: item.created_at || new Date().toISOString()
+      }));
+      
+      return {
+        ...state,
+        items: localItems,
+        medusaCart: action.payload
+      };
+
     default:
       return state;
   }
@@ -182,7 +214,9 @@ const initialState: CartState = {
   isOpen: false,
   loading: false,
   currency: 'NGN',
-  shippingLocation: 'lagos'
+  shippingLocation: 'lagos',
+  medusaCartId: null,
+  medusaCart: null
 };
 
 // ===============================
@@ -198,20 +232,47 @@ interface CartProviderProps {
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
 
+  // Initialize MedusaJS cart
+  const initializeMedusaCart = async () => {
+    try {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      
+      // Check for existing cart ID
+      const savedCartId = localStorage.getItem('rebbie-medusa-cart-id');
+      
+      if (savedCartId) {
+        try {
+          // Try to retrieve existing cart
+          const existingCart = await getCart(savedCartId);
+          dispatch({ type: 'SET_MEDUSA_CART', payload: { cartId: savedCartId, cart: existingCart } });
+          dispatch({ type: 'SYNC_FROM_MEDUSA', payload: existingCart });
+          return;
+        } catch (error) {
+          // Cart doesn't exist, remove from storage
+          localStorage.removeItem('rebbie-medusa-cart-id');
+        }
+      }
+
+      // Create new cart
+      const nigeriaRegion = await getNigeriaRegion();
+      const newCart = await createCart(nigeriaRegion?.id, state.currency.toLowerCase());
+      
+      localStorage.setItem('rebbie-medusa-cart-id', newCart.id);
+      dispatch({ type: 'SET_MEDUSA_CART', payload: { cartId: newCart.id, cart: newCart } });
+      dispatch({ type: 'SYNC_FROM_MEDUSA', payload: newCart });
+      
+    } catch (error) {
+      console.error('Error initializing MedusaJS cart:', error);
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  };
+
   // Load cart from localStorage on mount
   useEffect(() => {
     const savedCart = localStorage.getItem('rebbie-cart');
     const savedCurrency = localStorage.getItem('rebbie-currency') as 'NGN' | 'USD' | 'EUR';
     const savedShippingLocation = localStorage.getItem('rebbie-shipping-location') as 'lagos' | 'nigeria' | 'international';
-
-    if (savedCart) {
-      try {
-        const parsedCart = JSON.parse(savedCart);
-        dispatch({ type: 'LOAD_CART', payload: parsedCart });
-      } catch (error) {
-        console.error('Error loading cart from localStorage:', error);
-      }
-    }
 
     if (savedCurrency) {
       dispatch({ type: 'CHANGE_CURRENCY', payload: savedCurrency });
@@ -220,6 +281,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     if (savedShippingLocation) {
       dispatch({ type: 'CHANGE_SHIPPING_LOCATION', payload: savedShippingLocation });
     }
+
+    // Initialize MedusaJS cart
+    initializeMedusaCart();
   }, []);
 
   // Save cart to localStorage when items change
@@ -245,29 +309,42 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     
     try {
-      // If product is not provided, we might need to fetch it
-      // For now, we'll assume it's always provided from the product details page
       if (!product) {
         throw new Error('Product information is required');
       }
 
+      if (!state.medusaCartId) {
+        await initializeMedusaCart();
+      }
+
+      if (state.medusaCartId) {
+        // Add to MedusaJS cart
+        const updatedCart = await addToCart(state.medusaCartId, {
+          variant_id: variant.id,
+          quantity,
+        });
+
+        // Sync the cart
+        dispatch({ type: 'SYNC_FROM_MEDUSA', payload: updatedCart });
+        dispatch({ type: 'SET_MEDUSA_CART', payload: { cartId: state.medusaCartId, cart: updatedCart } });
+      } else {
+        // Fallback to local cart if MedusaJS fails
+        dispatch({ 
+          type: 'ADD_ITEM', 
+          payload: { variant, quantity, product }
+        });
+      }
+
+      dispatch({ type: 'OPEN_CART' });
+
+    } catch (error) {
+      console.error('Error adding item to cart:', error);
+      // Fallback to local cart on error
       dispatch({ 
         type: 'ADD_ITEM', 
         payload: { variant, quantity, product }
       });
-
-      // Optional: Add analytics tracking
-      // Analytics.track('Add to Cart', {
-      //   product_id: product.id,
-      //   variant_id: variant.id,
-      //   quantity,
-      //   price: variant.prices?.[0]?.amount,
-      //   currency: state.currency
-      // });
-
-    } catch (error) {
-      console.error('Error adding item to cart:', error);
-      throw error;
+      dispatch({ type: 'OPEN_CART' });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
@@ -363,7 +440,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     getCartCount,
     getShippingCost,
     changeCurrency,
-    changeShippingLocation
+    changeShippingLocation,
+    initializeMedusaCart
   };
 
   return React.createElement(

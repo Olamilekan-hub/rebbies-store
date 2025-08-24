@@ -33,22 +33,33 @@ export const getProducts = async (params?: {
   currency_code?: string;
 }) => {
   try {
-    const { products, count, offset, limit } = await medusaClient.store.product.list({
+    const queryParams: any = {
       limit: params?.limit || 20,
       offset: params?.offset || 0,
-      category_id: params?.category_id,
-      q: params?.q,
-      tags: params?.tags,
-      collection_id: params?.collection_id,
-      currency_code: params?.currency_code || 'NGN',
-    });
+    };
+
+    // Add optional parameters only if they exist
+    if (params?.category_id?.length) {
+      queryParams.category_id = params.category_id;
+    }
+    if (params?.q) {
+      queryParams.q = params.q;
+    }
+    if (params?.tags?.length) {
+      queryParams.tags = params.tags;
+    }
+    if (params?.collection_id?.length) {
+      queryParams.collection_id = params.collection_id;
+    }
+
+    const { products, count, offset, limit } = await medusaClient.store.product.list(queryParams);
 
     return {
       products,
-      count,
-      offset,
-      limit,
-      hasMore: offset + limit < count,
+      count: count || products.length,
+      offset: offset || 0,
+      limit: limit || 20,
+      hasMore: (offset || 0) + (limit || 20) < (count || products.length),
     };
   } catch (error) {
     console.error('Error fetching products:', error);
@@ -57,16 +68,16 @@ export const getProducts = async (params?: {
 };
 
 /**
- * Fetch a single product by handle
+ * Fetch a single product by handle or ID
  */
-export const getProduct = async (handle: string, currency_code: string = 'NGN') => {
+export const getProduct = async (handleOrId: string, currency_code: string = 'ngn') => {
   try {
-    const { product } = await medusaClient.store.product.retrieve(handle, {
-      currency_code,
+    const { product } = await medusaClient.store.product.retrieve(handleOrId, {
+      currency_code: currency_code.toLowerCase(),
     });
     return product;
   } catch (error) {
-    console.error(`Error fetching product ${handle}:`, error);
+    console.error(`Error fetching product ${handleOrId}:`, error);
     throw error;
   }
 };
@@ -81,7 +92,8 @@ export const getProductsByCategory = async (categoryId: string, params?: {
 }) => {
   try {
     return await getProducts({
-      ...params,
+      limit: params?.limit,
+      offset: params?.offset,
       category_id: [categoryId],
     });
   } catch (error) {
@@ -100,7 +112,7 @@ export const getProductsByCategory = async (categoryId: string, params?: {
 export const getCategories = async () => {
   try {
     const { product_categories } = await medusaClient.store.category.list();
-    return product_categories;
+    return product_categories || [];
   } catch (error) {
     console.error('Error fetching categories:', error);
     throw error;
@@ -129,12 +141,17 @@ export const getCategory = async (handle: string) => {
 /**
  * Create a new cart
  */
-export const createCart = async (region_id?: string, currency_code: string = 'NGN') => {
+export const createCart = async (region_id?: string, currency_code: string = 'ngn') => {
   try {
-    const { cart } = await medusaClient.store.cart.create({
-      region_id,
-      currency_code,
-    });
+    const cartData: any = {
+      currency_code: currency_code.toLowerCase(),
+    };
+    
+    if (region_id) {
+      cartData.region_id = region_id;
+    }
+
+    const { cart } = await medusaClient.store.cart.create(cartData);
     return cart;
   } catch (error) {
     console.error('Error creating cart:', error);
@@ -210,7 +227,7 @@ export const removeFromCart = async (cartId: string, lineId: string) => {
 export const getRegions = async () => {
   try {
     const { regions } = await medusaClient.store.region.list();
-    return regions;
+    return regions || [];
   } catch (error) {
     console.error('Error fetching regions:', error);
     throw error;
@@ -297,7 +314,9 @@ export const searchProducts = async (query: string, params?: {
 }) => {
   try {
     return await getProducts({
-      ...params,
+      limit: params?.limit,
+      offset: params?.offset,
+      category_id: params?.category_id,
       q: query,
     });
   } catch (error) {
