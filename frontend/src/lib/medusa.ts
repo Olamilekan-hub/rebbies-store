@@ -325,4 +325,393 @@ export const searchProducts = async (query: string, params?: {
   }
 };
 
+// ===============================
+// SHIPPING FUNCTIONS
+// ===============================
+
+/**
+ * Get available shipping options for cart
+ */
+export const getShippingOptions = async (cartId: string) => {
+  try {
+    const { shipping_options } = await medusaClient.store.fulfillment.listCartOptions(cartId);
+    return shipping_options || [];
+  } catch (error) {
+    console.error(`Error fetching shipping options for cart ${cartId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Add shipping method to cart
+ */
+export const addShippingMethod = async (cartId: string, optionId: string) => {
+  try {
+    const { cart } = await medusaClient.store.cart.shippingMethod.create(cartId, {
+      option_id: optionId,
+    });
+    return cart;
+  } catch (error) {
+    console.error('Error adding shipping method:', error);
+    throw error;
+  }
+};
+
+// ===============================
+// CHECKOUT & PAYMENT FUNCTIONS
+// ===============================
+
+/**
+ * Create payment sessions for cart
+ */
+export const createPaymentSessions = async (cartId: string) => {
+  try {
+    const { cart } = await medusaClient.store.cart.paymentSession.create(cartId);
+    return cart;
+  } catch (error) {
+    console.error('Error creating payment sessions:', error);
+    throw error;
+  }
+};
+
+/**
+ * Set payment session
+ */
+export const setPaymentSession = async (cartId: string, providerId: string) => {
+  try {
+    const { cart } = await medusaClient.store.cart.setPaymentSession(cartId, {
+      provider_id: providerId,
+    });
+    return cart;
+  } catch (error) {
+    console.error('Error setting payment session:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update payment session
+ */
+export const updatePaymentSession = async (cartId: string, providerId: string, data: any) => {
+  try {
+    const { cart } = await medusaClient.store.cart.paymentSession.update(cartId, providerId, {
+      data,
+    });
+    return cart;
+  } catch (error) {
+    console.error('Error updating payment session:', error);
+    throw error;
+  }
+};
+
+/**
+ * Complete cart and create order
+ */
+export const completeCart = async (cartId: string) => {
+  try {
+    const { order } = await medusaClient.store.cart.complete(cartId);
+    return order;
+  } catch (error) {
+    console.error('Error completing cart:', error);
+    throw error;
+  }
+};
+
+// ===============================
+// ORDER FUNCTIONS
+// ===============================
+
+/**
+ * Get order by ID
+ */
+export const getOrder = async (orderId: string) => {
+  try {
+    const { order } = await medusaClient.store.order.retrieve(orderId);
+    return order;
+  } catch (error) {
+    console.error(`Error fetching order ${orderId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Get order by cart ID
+ */
+export const getOrderByCartId = async (cartId: string) => {
+  try {
+    const { order } = await medusaClient.store.order.retrieveByCartId(cartId);
+    return order;
+  } catch (error) {
+    console.error(`Error fetching order by cart ${cartId}:`, error);
+    throw error;
+  }
+};
+
+// ===============================
+// CUSTOMER AUTHENTICATION FUNCTIONS
+// ===============================
+
+/**
+ * Customer registration
+ */
+export const registerCustomer = async (customerData: {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  phone?: string;
+}) => {
+  try {
+    const { customer } = await medusaClient.store.customer.create(customerData);
+    return customer;
+  } catch (error) {
+    console.error('Error registering customer:', error);
+    throw error;
+  }
+};
+
+/**
+ * Customer login
+ */
+export const loginCustomer = async (email: string, password: string) => {
+  try {
+    const { customer } = await medusaClient.store.auth.authenticate({
+      email,
+      password,
+    });
+    return customer;
+  } catch (error) {
+    console.error('Error logging in customer:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get current customer profile
+ */
+export const getCurrentCustomer = async () => {
+  try {
+    const { customer } = await medusaClient.store.customer.retrieve();
+    return customer;
+  } catch (error) {
+    console.error('Error fetching current customer:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update customer profile
+ */
+export const updateCustomer = async (customerData: {
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  phone?: string;
+  password?: string;
+  metadata?: Record<string, any>;
+}) => {
+  try {
+    const { customer } = await medusaClient.store.customer.update(customerData);
+    return customer;
+  } catch (error) {
+    console.error('Error updating customer:', error);
+    throw error;
+  }
+};
+
+/**
+ * Customer logout
+ */
+export const logoutCustomer = async () => {
+  try {
+    await medusaClient.store.auth.deleteSession();
+    return true;
+  } catch (error) {
+    console.error('Error logging out customer:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get customer orders
+ */
+export const getCustomerOrders = async (params?: {
+  limit?: number;
+  offset?: number;
+}) => {
+  try {
+    const { orders, count, offset, limit } = await medusaClient.store.customer.listOrders({
+      limit: params?.limit || 10,
+      offset: params?.offset || 0,
+    });
+    return {
+      orders: orders || [],
+      count: count || 0,
+      offset: offset || 0,
+      limit: limit || 10,
+    };
+  } catch (error) {
+    console.error('Error fetching customer orders:', error);
+    throw error;
+  }
+};
+
+// ===============================
+// PAYSTACK INTEGRATION FUNCTIONS
+// ===============================
+
+/**
+ * Initialize Paystack payment
+ */
+export const initializePaystackPayment = async (cartId: string, email: string) => {
+  try {
+    const response = await fetch('/api/paystack/initialize', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        cartId, 
+        email,
+        currency: 'NGN' 
+      }),
+    });
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error initializing Paystack payment:', error);
+    throw error;
+  }
+};
+
+/**
+ * Verify Paystack payment
+ */
+export const verifyPaystackPayment = async (reference: string) => {
+  try {
+    const response = await fetch(`/api/paystack/verify/${reference}`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error verifying Paystack payment:', error);
+    throw error;
+  }
+};
+
+// ===============================
+// ADDRESS MANAGEMENT FUNCTIONS
+// ===============================
+
+/**
+ * Add shipping address to cart
+ */
+export const addShippingAddress = async (cartId: string, address: {
+  first_name: string;
+  last_name: string;
+  address_1: string;
+  address_2?: string;
+  city: string;
+  postal_code?: string;
+  province?: string;
+  country_code: string;
+  phone?: string;
+}) => {
+  try {
+    const { cart } = await medusaClient.store.cart.update(cartId, {
+      shipping_address: address,
+    });
+    return cart;
+  } catch (error) {
+    console.error('Error adding shipping address:', error);
+    throw error;
+  }
+};
+
+/**
+ * Add billing address to cart
+ */
+export const addBillingAddress = async (cartId: string, address: {
+  first_name: string;
+  last_name: string;
+  address_1: string;
+  address_2?: string;
+  city: string;
+  postal_code?: string;
+  province?: string;
+  country_code: string;
+  phone?: string;
+}) => {
+  try {
+    const { cart } = await medusaClient.store.cart.update(cartId, {
+      billing_address: address,
+    });
+    return cart;
+  } catch (error) {
+    console.error('Error adding billing address:', error);
+    throw error;
+  }
+};
+
+/**
+ * Add customer email to cart
+ */
+export const addCustomerEmail = async (cartId: string, email: string) => {
+  try {
+    const { cart } = await medusaClient.store.cart.update(cartId, {
+      email,
+    });
+    return cart;
+  } catch (error) {
+    console.error('Error adding customer email:', error);
+    throw error;
+  }
+};
+
+// ===============================
+// NIGERIAN SPECIFIC FUNCTIONS
+// ===============================
+
+/**
+ * Get Nigerian shipping rates based on location
+ */
+export const getNigerianShippingRates = (state: string, cartTotal: number) => {
+  const rates = {
+    lagos: { 
+      standard: 200000, // ₦2,000 in kobo
+      express: 300000,  // ₦3,000 in kobo
+      freeThreshold: 5000000 // ₦50,000 in kobo
+    },
+    nigeria: { 
+      standard: 500000, // ₦5,000 in kobo
+      express: 800000,  // ₦8,000 in kobo
+      freeThreshold: 10000000 // ₦100,000 in kobo
+    }
+  };
+
+  const isLagos = state.toLowerCase().includes('lagos');
+  const zone = isLagos ? rates.lagos : rates.nigeria;
+  
+  return {
+    standard: cartTotal >= zone.freeThreshold ? 0 : zone.standard,
+    express: cartTotal >= zone.freeThreshold ? zone.express / 2 : zone.express,
+    isFreeShipping: cartTotal >= zone.freeThreshold,
+    freeThreshold: zone.freeThreshold,
+  };
+};
+
+/**
+ * Validate Nigerian phone number
+ */
+export const validateNigerianPhone = (phone: string): boolean => {
+  // Nigerian phone patterns: +234, 0, or raw 11 digits
+  const patterns = [
+    /^\+234[789]\d{9}$/,     // +2348012345678
+    /^0[789]\d{9}$/,         // 08012345678
+    /^[789]\d{9}$/,          // 8012345678
+  ];
+  
+  return patterns.some(pattern => pattern.test(phone.replace(/\s+/g, '')));
+};
+
 export default medusaClient;
