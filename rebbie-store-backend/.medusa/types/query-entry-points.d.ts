@@ -59,41 +59,6 @@ export type ApiKey = {
   sales_channels: Maybe<Array<Maybe<SalesChannel>>>;
 };
 
-export type StockLocationAddress = {
-  __typename?: 'StockLocationAddress';
-  id: Maybe<Scalars['ID']['output']>;
-  address_1: Scalars['String']['output'];
-  address_2: Maybe<Scalars['String']['output']>;
-  company: Maybe<Scalars['String']['output']>;
-  country_code: Scalars['String']['output'];
-  city: Maybe<Scalars['String']['output']>;
-  phone: Maybe<Scalars['String']['output']>;
-  postal_code: Maybe<Scalars['String']['output']>;
-  province: Maybe<Scalars['String']['output']>;
-  metadata: Maybe<Scalars['JSON']['output']>;
-  created_at: Scalars['DateTime']['output'];
-  updated_at: Scalars['DateTime']['output'];
-  deleted_at: Maybe<Scalars['DateTime']['output']>;
-};
-
-export type StockLocation = {
-  __typename?: 'StockLocation';
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-  metadata: Maybe<Scalars['JSON']['output']>;
-  address_id: Scalars['ID']['output'];
-  address: Maybe<StockLocationAddress>;
-  created_at: Scalars['DateTime']['output'];
-  updated_at: Scalars['DateTime']['output'];
-  deleted_at: Maybe<Scalars['DateTime']['output']>;
-  fulfillment_provider_link: Maybe<Array<Maybe<LinkLocationFulfillmentProvider>>>;
-  fulfillment_providers: Maybe<Array<Maybe<FulfillmentProvider>>>;
-  fulfillment_set_link: Maybe<Array<Maybe<LinkLocationFulfillmentSet>>>;
-  fulfillment_sets: Maybe<Array<Maybe<FulfillmentSet>>>;
-  sales_channels_link: Maybe<Array<Maybe<LinkSalesChannelStockLocation>>>;
-  sales_channels: Maybe<Array<Maybe<SalesChannel>>>;
-};
-
 export type Store = {
   __typename?: 'Store';
   id: Scalars['ID']['output'];
@@ -169,6 +134,41 @@ export type WorkflowExecution = {
   created_at: Scalars['DateTime']['output'];
   updated_at: Scalars['DateTime']['output'];
   deleted_at: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type StockLocationAddress = {
+  __typename?: 'StockLocationAddress';
+  id: Maybe<Scalars['ID']['output']>;
+  address_1: Scalars['String']['output'];
+  address_2: Maybe<Scalars['String']['output']>;
+  company: Maybe<Scalars['String']['output']>;
+  country_code: Scalars['String']['output'];
+  city: Maybe<Scalars['String']['output']>;
+  phone: Maybe<Scalars['String']['output']>;
+  postal_code: Maybe<Scalars['String']['output']>;
+  province: Maybe<Scalars['String']['output']>;
+  metadata: Maybe<Scalars['JSON']['output']>;
+  created_at: Scalars['DateTime']['output'];
+  updated_at: Scalars['DateTime']['output'];
+  deleted_at: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type StockLocation = {
+  __typename?: 'StockLocation';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  metadata: Maybe<Scalars['JSON']['output']>;
+  address_id: Scalars['ID']['output'];
+  address: Maybe<StockLocationAddress>;
+  created_at: Scalars['DateTime']['output'];
+  updated_at: Scalars['DateTime']['output'];
+  deleted_at: Maybe<Scalars['DateTime']['output']>;
+  fulfillment_provider_link: Maybe<Array<Maybe<LinkLocationFulfillmentProvider>>>;
+  fulfillment_providers: Maybe<Array<Maybe<FulfillmentProvider>>>;
+  fulfillment_set_link: Maybe<Array<Maybe<LinkLocationFulfillmentSet>>>;
+  fulfillment_sets: Maybe<Array<Maybe<FulfillmentSet>>>;
+  sales_channels_link: Maybe<Array<Maybe<LinkSalesChannelStockLocation>>>;
+  sales_channels: Maybe<Array<Maybe<SalesChannel>>>;
 };
 
 export type InventoryItem = {
@@ -2058,10 +2058,6 @@ declare module '@medusajs/framework/types' {
     sales_channels: SalesChannel
     api_key: ApiKey
     api_keys: ApiKey
-    stock_location_address: StockLocationAddress
-    stock_location_addresses: StockLocationAddress
-    stock_location: StockLocation
-    stock_locations: StockLocation
     store: Store
     stores: Store
     store_currency: StoreCurrency
@@ -2072,6 +2068,10 @@ declare module '@medusajs/framework/types' {
     invites: Invite
     workflow_execution: WorkflowExecution
     workflow_executions: WorkflowExecution
+    stock_location_address: StockLocationAddress
+    stock_location_addresses: StockLocationAddress
+    stock_location: StockLocation
+    stock_locations: StockLocation
     inventory_items: InventoryItem
     inventory_item: InventoryItem
     inventory: InventoryItem
