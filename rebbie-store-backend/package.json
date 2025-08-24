@@ -13,9 +13,9 @@
     "medusa"
   ],
   "scripts": {
-    "build": "medusa build && medusa build:admin && ls -la dist/",
-    "build:admin": "medusa build:admin",
-    "build:production": "NODE_ENV=production medusa build && NODE_ENV=production medusa build:admin",
+    "build": "medusa build && ls -la dist/",
+    "build:admin": "medusa build",
+    "build:production": "NODE_ENV=production medusa build",
     "migrations:run": "medusa db:migrate",
     "start": "medusa start",
     "seed": "medusa exec ./src/scripts/seed.ts",
