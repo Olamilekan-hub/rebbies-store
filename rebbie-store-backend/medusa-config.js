@@ -16,7 +16,7 @@ module.exports = defineConfig({
   },
   admin: {
     disable: true,
-    path: "/app",
+    path: "/",
   },
   modules: [
     // Payment Module with Nigerian providers

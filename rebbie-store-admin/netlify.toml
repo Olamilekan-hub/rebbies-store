@@ -6,9 +6,14 @@
   MEDUSA_ADMIN_BACKEND_URL = "https://rebbies-store-y5cp.onrender.com"
 
 [[redirects]]
-  from = "/*"
+  from = "/app/*"
   to = "/index.html"
   status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/app/"
+  status = 301
 
 [context.production.environment]
   MEDUSA_ADMIN_BACKEND_URL = "https://rebbies-store-y5cp.onrender.com"
