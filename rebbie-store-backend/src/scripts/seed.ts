@@ -313,6 +313,9 @@ export default async function seedRebbieStoreData({ container }: ExecArgs) {
     },
   });
   const publishableApiKey = publishableApiKeyResult[0];
+  
+  logger.info(`🔑 Publishable API Key created: ${publishableApiKey.token}`);
+  logger.info(`🔑 Use this key in your frontend: NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=${publishableApiKey.token}`);
 
   await linkSalesChannelsToApiKeyWorkflow(container).run({
     input: {
