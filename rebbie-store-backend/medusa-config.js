@@ -1,15 +1,15 @@
-import { loadEnv, defineConfig } from '@medusajs/framework/utils'
+const { loadEnv, defineConfig } = require('@medusajs/framework/utils')
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
-export default defineConfig({
+module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
     redisUrl: process.env.REDIS_URL,
     http: {
-      storeCors: process.env.STORE_CORS,
-      adminCors: process.env.ADMIN_CORS,
-      authCors: process.env.AUTH_CORS,
+      storeCors: process.env.STORE_CORS || "https://rebbies-store.vercel.app",
+      adminCors: process.env.ADMIN_CORS || "https://rebbies-store.vercel.app",
+      authCors: process.env.AUTH_CORS || "https://rebbies-store.vercel.app",
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     }
@@ -34,7 +34,7 @@ export default defineConfig({
             options: {
               secret_key: process.env.PAYSTACK_SECRET_KEY || "",
               disable_retries: false, // Keep retries enabled for production
-            } satisfies import("medusa-payment-paystack").PluginOptions,
+            },
           },
         ],
       },
