@@ -6,17 +6,13 @@
   MEDUSA_ADMIN_BACKEND_URL = "https://rebbies-store-y5cp.onrender.com"
 
 [[redirects]]
-  from = "/app/*"
-  to = "/index.html"
-  status = 200
-
-[[redirects]]
   from = "/"
-  to = "/app/"
-  status = 301
+  to = "/app"
+  status = 302
 
+# Only redirect non-asset paths to index.html for SPA routing
 [[redirects]]
-  from = "/*"
+  from = "/app*"
   to = "/index.html"
   status = 200
 
