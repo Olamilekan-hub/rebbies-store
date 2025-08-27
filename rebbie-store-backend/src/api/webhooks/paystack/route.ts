@@ -1,4 +1,4 @@
-import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
+import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import crypto from "crypto";
 
 export async function POST(req: MedusaRequest, res: MedusaResponse) {
