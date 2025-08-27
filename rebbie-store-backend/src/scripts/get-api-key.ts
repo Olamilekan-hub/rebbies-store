@@ -8,7 +8,7 @@ export default async function getExistingApiKey({ container }: ExecArgs) {
     logger.info("🔍 Looking for existing API keys...");
     
     // Get database connection
-    const manager = container.resolve("manager");
+    const manager = container.resolve("manager") as any;
     
     // Query for existing publishable API keys
     const apiKeys = await manager.query(`
