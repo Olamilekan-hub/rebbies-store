@@ -7,19 +7,13 @@
 
 [[redirects]]
   from = "/"
-  to = "/app/"
-  status = 301
+  to = "/app"
+  status = 302
 
+# Only redirect non-asset paths to index.html for SPA routing
 [[redirects]]
-  from = "/app/*"
+  from = "/app*"
   to = "/index.html"
-  status = 200
-  force = false
-
-# Don't redirect asset files
-[[redirects]]
-  from = "/assets/*"
-  to = "/assets/:splat"
   status = 200
 
 [context.production.environment]
