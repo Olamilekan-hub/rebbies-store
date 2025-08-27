@@ -9,13 +9,16 @@
   from = "/app/*"
   to = "/index.html"
   status = 200
-  conditions = {Path = "!/app/assets/*"}
+
+[[redirects]]
+  from = "/"
+  to = "/app/"
+  status = 301
 
 [[redirects]]
   from = "/*"
-  to = "/app/"
-  status = 301
-  conditions = {Path = "!/assets/*"}
+  to = "/index.html"
+  status = 200
 
 [context.production.environment]
   MEDUSA_ADMIN_BACKEND_URL = "https://rebbies-store-y5cp.onrender.com"
