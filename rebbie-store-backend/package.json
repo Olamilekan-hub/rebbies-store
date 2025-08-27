@@ -13,7 +13,7 @@
     "medusa"
   ],
   "scripts": {
-    "build": "medusa build && mkdir -p .medusa/server/public/admin && ls -la .medusa/server/public/admin/",
+    "build": "NODE_ENV=production MEDUSA_ADMIN_ONBOARDING_TYPE=default medusa build && find . -name '*.html' && ls -la .medusa/ 2>/dev/null || true",
     "build:admin": "medusa build",
     "build:production": "NODE_ENV=production medusa build",
     "migrations:run": "medusa db:migrate",
