@@ -13,7 +13,7 @@
     "medusa"
   ],
   "scripts": {
-    "build": "create-admin && medusa build",
+    "build": "medusa build",
     "build:admin": "medusa build",
     "build:production": "NODE_ENV=production medusa build",
     "migrations:run": "medusa db:migrate",
