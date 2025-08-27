@@ -14,7 +14,6 @@
   ],
   "scripts": {
     "build": "medusa build",
-    "reset-and-seed": "medusa db:migrate --force && npm run seed",
     "build:admin": "medusa build",
     "build:production": "NODE_ENV=production medusa build",
     "migrations:run": "medusa db:migrate",
