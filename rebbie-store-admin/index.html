@@ -10,15 +10,16 @@
             content="width=device-width, initial-scale=1, user-scalable=no"
         />
         <link rel="icon" href="data:," data-placeholder-favicon />
+        <script>
+          // Configure MedusaJS backend URL for admin - must be set before app loads
+          window.__MEDUSA_BACKEND_URL__ = "https://rebbies-store-y5cp.onrender.com";
+          window.ENV = { MEDUSA_BACKEND_URL: "https://rebbies-store-y5cp.onrender.com" };
+        </script>
       <script type="module" crossorigin src="./assets/index-DSbQcqQI.js"></script>
       <link rel="stylesheet" crossorigin href="./assets/index-CYl5XazS.css">
     </head>
 
     <body>
         <div id="medusa"></div>
-        <script>
-          // Configure MedusaJS backend URL for admin
-          window.__MEDUSA_BACKEND_URL__ = "https://rebbies-store-y5cp.onrender.com";
-        </script>
     </body>
 </html>
