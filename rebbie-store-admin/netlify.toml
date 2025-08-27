@@ -6,18 +6,20 @@
   MEDUSA_ADMIN_BACKEND_URL = "https://rebbies-store-y5cp.onrender.com"
 
 [[redirects]]
-  from = "/app/*"
-  to = "/index.html"
-  status = 200
-
-[[redirects]]
   from = "/"
   to = "/app/"
   status = 301
 
 [[redirects]]
-  from = "/*"
+  from = "/app/*"
   to = "/index.html"
+  status = 200
+  force = false
+
+# Don't redirect asset files
+[[redirects]]
+  from = "/assets/*"
+  to = "/assets/:splat"
   status = 200
 
 [context.production.environment]
