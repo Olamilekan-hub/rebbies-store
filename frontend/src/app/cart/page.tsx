@@ -6,6 +6,9 @@
 'use client';
 
 import React, { useState } from 'react';
+
+// Force dynamic rendering to prevent SSG issues with cart context
+export const dynamic = 'force-dynamic';
 import Link from 'next/link';
 import Image from 'next/image';
 import { 
@@ -19,8 +22,7 @@ import {
   TagIcon
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
-import { useCart, formatPrice } from '@/hooks/useCart';
-import { CartItem } from '@/hooks/useCart';
+import { useCart, formatPrice, CartItem } from '@/context/CartContext';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 // import Badge from '@/components/ui/Badge';

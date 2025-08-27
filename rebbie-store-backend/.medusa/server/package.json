@@ -13,8 +13,10 @@
     "medusa"
   ],
   "scripts": {
+    "build": "medusa build && mkdir -p .medusa/server/public/admin && ls -la .medusa/server/public/admin/",
+    "build:admin": "medusa build",
+    "build:production": "NODE_ENV=production medusa build",
     "migrations:run": "medusa db:migrate",
-    "build": "medusa build",
     "start": "medusa start",
     "seed": "medusa exec ./src/scripts/seed.ts",
     "dev": "medusa develop",
