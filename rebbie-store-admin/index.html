@@ -24,27 +24,41 @@
           const BACKEND_URL = "https://rebbies-store-y5cp.onrender.com";
           
           window.fetch = function(input, init) {
+            // Handle different input types
             let url = input;
+            let finalUrl = input;
+            
             if (typeof input === 'string') {
-              // If URL starts with /, it's relative - make it absolute to backend
               if (input.startsWith('/')) {
-                url = BACKEND_URL + input;
-              }
-              // If it's trying to go to netlify app for auth, redirect to backend
-              if (input.includes('darling-bublanina-92fba5.netlify.app')) {
-                url = input.replace('https://darling-bublanina-92fba5.netlify.app', BACKEND_URL);
+                finalUrl = BACKEND_URL + input;
+              } else if (input.includes('darling-bublanina-92fba5.netlify.app')) {
+                finalUrl = input.replace('https://darling-bublanina-92fba5.netlify.app', BACKEND_URL);
               }
             } else if (input instanceof Request) {
               const reqUrl = input.url;
               if (reqUrl.startsWith('/')) {
-                url = new Request(BACKEND_URL + reqUrl, input);
+                finalUrl = new Request(BACKEND_URL + reqUrl, input);
               } else if (reqUrl.includes('darling-bublanina-92fba5.netlify.app')) {
-                url = new Request(reqUrl.replace('https://darling-bublanina-92fba5.netlify.app', BACKEND_URL), input);
+                finalUrl = new Request(reqUrl.replace('https://darling-bublanina-92fba5.netlify.app', BACKEND_URL), input);
               }
+            } else if (input && typeof input === 'object' && input.url) {
+              // Handle other object types that have url property
+              const reqUrl = input.url;
+              if (reqUrl.startsWith('/')) {
+                input.url = BACKEND_URL + reqUrl;
+              } else if (reqUrl.includes('darling-bublanina-92fba5.netlify.app')) {
+                input.url = reqUrl.replace('https://darling-bublanina-92fba5.netlify.app', BACKEND_URL);
+              }
+              finalUrl = input;
             }
             
-            console.log('Fetch intercepted:', typeof input === 'string' ? input : input.url, '→', typeof url === 'string' ? url : url.url);
-            return originalFetch(url, init);
+            console.log('Fetch intercepted:', 
+              input === undefined ? 'undefined' : (typeof input === 'string' ? input : (input.url || 'unknown')), 
+              '→', 
+              finalUrl === undefined ? 'undefined' : (typeof finalUrl === 'string' ? finalUrl : (finalUrl.url || 'unknown'))
+            );
+            
+            return originalFetch(finalUrl, init);
           };
         </script>
       <script type="module" crossorigin src="./assets/index-DSbQcqQI.js"></script>
