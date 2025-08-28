@@ -8,14 +8,14 @@ module.exports = defineConfig({
     redisUrl: process.env.REDIS_URL,
     http: {
       storeCors: process.env.STORE_CORS || "https://rebbies-store.vercel.app",
-      adminCors: process.env.ADMIN_CORS || "https://rebbies-store.vercel.app",
-      authCors: process.env.AUTH_CORS || "https://rebbies-store.vercel.app",
+      adminCors: process.env.ADMIN_CORS || "https://darling-bublanina-92fba5.netlify.app,https://rebbies-store.vercel.app",
+      authCors: process.env.AUTH_CORS || "https://darling-bublanina-92fba5.netlify.app,https://rebbies-store.vercel.app",
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     }
   },
   admin: {
-    disable: false,
+    disable: true,
     path: "/",
     backendUrl: "https://rebbies-store-y5cp.onrender.com",
   },
