@@ -11,23 +11,41 @@
         />
         <link rel="icon" href="data:," data-placeholder-favicon />
         <script>
-          // Configure MedusaJS backend URL for admin - must be set before app loads
+          // Configure MedusaJS backend URL for admin
           window.MEDUSA_BACKEND_URL = "https://rebbies-store-y5cp.onrender.com";
           window.__MEDUSA_BACKEND_URL__ = "https://rebbies-store-y5cp.onrender.com";
           window.ENV = { 
             MEDUSA_BACKEND_URL: "https://rebbies-store-y5cp.onrender.com",
             MEDUSA_ADMIN_BACKEND_URL: "https://rebbies-store-y5cp.onrender.com"
           };
-          // Set base URL for API calls
-          if (window.fetch) {
-            const originalFetch = window.fetch;
-            window.fetch = function(url, options) {
-              if (typeof url === 'string' && url.startsWith('/')) {
-                url = "https://rebbies-store-y5cp.onrender.com" + url;
+          
+          // Override fetch more aggressively
+          const originalFetch = window.fetch;
+          const BACKEND_URL = "https://rebbies-store-y5cp.onrender.com";
+          
+          window.fetch = function(input, init) {
+            let url = input;
+            if (typeof input === 'string') {
+              // If URL starts with /, it's relative - make it absolute to backend
+              if (input.startsWith('/')) {
+                url = BACKEND_URL + input;
               }
-              return originalFetch(url, options);
-            };
-          }
+              // If it's trying to go to netlify app for auth, redirect to backend
+              if (input.includes('darling-bublanina-92fba5.netlify.app')) {
+                url = input.replace('https://darling-bublanina-92fba5.netlify.app', BACKEND_URL);
+              }
+            } else if (input instanceof Request) {
+              const reqUrl = input.url;
+              if (reqUrl.startsWith('/')) {
+                url = new Request(BACKEND_URL + reqUrl, input);
+              } else if (reqUrl.includes('darling-bublanina-92fba5.netlify.app')) {
+                url = new Request(reqUrl.replace('https://darling-bublanina-92fba5.netlify.app', BACKEND_URL), input);
+              }
+            }
+            
+            console.log('Fetch intercepted:', typeof input === 'string' ? input : input.url, '→', typeof url === 'string' ? url : url.url);
+            return originalFetch(url, init);
+          };
         </script>
       <script type="module" crossorigin src="./assets/index-DSbQcqQI.js"></script>
       <link rel="stylesheet" crossorigin href="./assets/index-CYl5XazS.css">
