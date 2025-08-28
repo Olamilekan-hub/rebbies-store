@@ -5,6 +5,13 @@
 [build.environment]
   MEDUSA_ADMIN_BACKEND_URL = "https://rebbies-store-y5cp.onrender.com"
 
+# Serve assets directly
+[[redirects]]
+  from = "/assets/*"
+  to = "/assets/:splat"
+  status = 200
+
+# Redirect root to admin
 [[redirects]]
   from = "/"
   to = "/app"
