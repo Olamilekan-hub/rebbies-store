@@ -10,62 +10,15 @@
             content="width=device-width, initial-scale=1, user-scalable=no"
         />
         <link rel="icon" href="data:," data-placeholder-favicon />
-        <script>
-          // Configure MedusaJS backend URL for admin
-          window.MEDUSA_BACKEND_URL = "https://rebbies-store-y5cp.onrender.com";
-          window.__MEDUSA_BACKEND_URL__ = "https://rebbies-store-y5cp.onrender.com";
-          window.ENV = { 
-            MEDUSA_BACKEND_URL: "https://rebbies-store-y5cp.onrender.com",
-            MEDUSA_ADMIN_BACKEND_URL: "https://rebbies-store-y5cp.onrender.com"
-          };
-          
-          // Override fetch more aggressively
-          const originalFetch = window.fetch;
-          const BACKEND_URL = "https://rebbies-store-y5cp.onrender.com";
-          
-          window.fetch = function(input, init) {
-            // Handle different input types
-            let url = input;
-            let finalUrl = input;
-            
-            if (typeof input === 'string') {
-              if (input.startsWith('/')) {
-                finalUrl = BACKEND_URL + input;
-              } else if (input.includes('darling-bublanina-92fba5.netlify.app')) {
-                finalUrl = input.replace('https://darling-bublanina-92fba5.netlify.app', BACKEND_URL);
-              }
-            } else if (input instanceof Request) {
-              const reqUrl = input.url;
-              if (reqUrl.startsWith('/')) {
-                finalUrl = new Request(BACKEND_URL + reqUrl, input);
-              } else if (reqUrl.includes('darling-bublanina-92fba5.netlify.app')) {
-                finalUrl = new Request(reqUrl.replace('https://darling-bublanina-92fba5.netlify.app', BACKEND_URL), input);
-              }
-            } else if (input && typeof input === 'object' && input.url) {
-              // Handle other object types that have url property
-              const reqUrl = input.url;
-              if (reqUrl.startsWith('/')) {
-                input.url = BACKEND_URL + reqUrl;
-              } else if (reqUrl.includes('darling-bublanina-92fba5.netlify.app')) {
-                input.url = reqUrl.replace('https://darling-bublanina-92fba5.netlify.app', BACKEND_URL);
-              }
-              finalUrl = input;
-            }
-            
-            console.log('Fetch intercepted:', 
-              input === undefined ? 'undefined' : (typeof input === 'string' ? input : (input.url || 'unknown')), 
-              '→', 
-              finalUrl === undefined ? 'undefined' : (typeof finalUrl === 'string' ? finalUrl : (finalUrl.url || 'unknown'))
-            );
-            
-            return originalFetch(finalUrl, init);
-          };
-        </script>
-      <script type="module" crossorigin src="./assets/index-DSbQcqQI.js"></script>
-      <link rel="stylesheet" crossorigin href="./assets/index-CYl5XazS.css">
+      <script type="module" crossorigin src="./app/assets/index-DSbQcqQI.js"></script>
+      <link rel="stylesheet" crossorigin href="./app/assets/index-CYl5XazS.css">
     </head>
 
     <body>
         <div id="medusa"></div>
+        <script>
+          // Configure MedusaJS backend URL for admin
+          window.__MEDUSA_BACKEND_URL__ = "https://rebbies-store-y5cp.onrender.com";
+        </script>
     </body>
 </html>

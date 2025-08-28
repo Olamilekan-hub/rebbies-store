@@ -15,8 +15,9 @@ module.exports = defineConfig({
     }
   },
   admin: {
-    disable: true,
+    disable: false,
     path: "/",
+    backendUrl: "https://rebbies-store-y5cp.onrender.com",
   },
   modules: [
     // Payment Module with Nigerian providers

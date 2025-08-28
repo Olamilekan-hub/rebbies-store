@@ -17,6 +17,7 @@
     "build:admin": "medusa build",
     "build:production": "NODE_ENV=production medusa build",
     "migrations:run": "medusa db:migrate",
+    "create-admin": "medusa user --email admin@rebbies-store.com --password supersecret123",
     "start": "medusa start",
     "seed": "medusa exec ./src/scripts/seed.ts",
     "dev": "medusa develop",
