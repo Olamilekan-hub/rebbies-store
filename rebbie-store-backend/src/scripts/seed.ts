@@ -1,4 +1,4 @@
-import { CreateInventoryLevelInput, ExecArgs } from "@medusajs/framework/types";
+import { ExecArgs } from "@medusajs/framework/types";
 import {
   ContainerRegistrationKeys,
   Modules,
@@ -215,11 +215,11 @@ export default async function seedRebbieStoreData({ container }: ExecArgs) {
         prices: [
           {
             currency_code: "ngn",
-            amount: 250000, // ₦2,500
+            amount: 200000, // ₦2,000 (Lagos same-day)
           },
           {
             region_id: nigeriaRegion.id,
-            amount: 250000,
+            amount: 200000,
           },
         ],
         rules: [
@@ -244,11 +244,11 @@ export default async function seedRebbieStoreData({ container }: ExecArgs) {
         prices: [
           {
             currency_code: "ngn",
-            amount: 150000, // ₦1,500
+            amount: 500000, // ₦5,000 (nationwide standard)
           },
           {
             region_id: nigeriaRegion.id,
-            amount: 150000,
+            amount: 500000,
           },
         ],
         rules: [
@@ -273,11 +273,11 @@ export default async function seedRebbieStoreData({ container }: ExecArgs) {
         prices: [
           {
             currency_code: "usd",
-            amount: 2500, // $25
+            amount: 1500, // $15 (more competitive international shipping)
           },
           {
             region_id: internationalRegion.id,  
-            amount: 2500,
+            amount: 1500,
           },
         ],
         rules: [
@@ -508,11 +508,11 @@ export default async function seedRebbieStoreData({ container }: ExecArgs) {
               prices: [
                 {
                   currency_code: "ngn",
-                  amount: 45000000, // ₦450,000
+                  amount: 3500000, // ₦35,000 (more accessible for Nigerian market)
                 },
                 {
                   currency_code: "usd",
-                  amount: 55000, // $550
+                  amount: 4200, // $42
                 },
               ],
             },
@@ -526,11 +526,11 @@ export default async function seedRebbieStoreData({ container }: ExecArgs) {
               prices: [
                 {
                   currency_code: "ngn",
-                  amount: 38000000, // ₦380,000
+                  amount: 2800000, // ₦28,000
                 },
                 {
                   currency_code: "usd",
-                  amount: 46000, // $460
+                  amount: 3400, // $34
                 },
               ],
             },
@@ -654,11 +654,11 @@ export default async function seedRebbieStoreData({ container }: ExecArgs) {
               prices: [
                 {
                   currency_code: "ngn",
-                  amount: 18500000, // ₦185,000
+                  amount: 1850000, // ₦18,500
                 },
                 {
                   currency_code: "usd",
-                  amount: 22500, // $225
+                  amount: 2250, // $22.5
                 },
               ],
             },
@@ -672,11 +672,11 @@ export default async function seedRebbieStoreData({ container }: ExecArgs) {
               prices: [
                 {
                   currency_code: "ngn",
-                  amount: 14500000, // ₦145,000
+                  amount: 145000, // ₦14,500
                 },
                 {
                   currency_code: "usd",
-                  amount: 17800, // $178
+                  amount: 1780, // $17.8
                 },
               ],
             },
@@ -843,7 +843,7 @@ export default async function seedRebbieStoreData({ container }: ExecArgs) {
     fields: ["id"],
   });
 
-  const inventoryLevels: CreateInventoryLevelInput[] = [];
+  const inventoryLevels: any[] = [];
   for (const inventoryItem of inventoryItems) {
     const inventoryLevel = {
       location_id: stockLocation.id,
