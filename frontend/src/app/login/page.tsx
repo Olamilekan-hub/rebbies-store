@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/context/AuthContext';
-import { FirebaseError } from 'firebase/app';
 
 // Create a separate component for the login form that uses useSearchParams
 const LoginForm: React.FC = () => {
@@ -49,30 +48,11 @@ const LoginForm: React.FC = () => {
     try {
       await login(email, password);
       router.push(redirectTo);
-    } catch (error) {
-      const firebaseError = error as FirebaseError;
-      
-      switch (firebaseError.code) {
-        case 'auth/invalid-email':
-          setError('Please enter a valid email address.');
-          break;
-        case 'auth/user-disabled':
-          setError('This account has been disabled. Please contact support.');
-          break;
-        case 'auth/user-not-found':
-          setError('No account found with this email address.');
-          break;
-        case 'auth/wrong-password':
-          setError('Incorrect password. Please try again.');
-          break;
-        case 'auth/invalid-credential':
-          setError('Invalid email or password. Please check your credentials.');
-          break;
-        case 'auth/too-many-requests':
-          setError('Too many failed attempts. Please try again later.');
-          break;
-        default:
-          setError('An error occurred during login. Please try again.');
+    } catch (error: any) {
+      if (error.message) {
+        setError(error.message);
+      } else {
+        setError('Invalid email or password. Please check your credentials and try again.');
       }
     } finally {
       setLoading(false);

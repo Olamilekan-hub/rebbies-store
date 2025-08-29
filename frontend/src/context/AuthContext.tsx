@@ -1,56 +1,42 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { 
-  User,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  sendPasswordResetEmail,
-  updateProfile,
-  sendEmailVerification,
-  onAuthStateChanged,
-  UserCredential
-} from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
+import { 
+  registerCustomer, 
+  loginCustomer, 
+  getCurrentCustomer, 
+  updateCustomer,
+  logoutCustomer 
+} from '@/lib/medusa';
 
 export interface UserProfile {
-  uid: string;
+  id: string;
   email: string;
-  displayName: string;
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   phone?: string;
-  dateOfBirth?: string;
-  gender?: 'male' | 'female' | 'other';
-  address?: {
-    street: string;
-    city: string;
-    state: string;
-    country: string;
-    zipCode: string;
+  date_of_birth?: string;
+  metadata?: {
+    gender?: 'male' | 'female' | 'other';
+    preferences?: {
+      newsletter: boolean;
+      smsUpdates: boolean;
+      whatsappUpdates: boolean;
+    };
   };
-  preferences?: {
-    newsletter: boolean;
-    smsUpdates: boolean;
-    whatsappUpdates: boolean;
-  };
-  createdAt: any;
-  lastLoginAt: any;
-  emailVerified: boolean;
+  created_at: string;
+  updated_at: string;
+  has_account: boolean;
 }
 
 interface AuthContextType {
-  user: User | null;
-  userProfile: UserProfile | null;
+  user: UserProfile | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<UserCredential>;
+  login: (email: string, password: string) => Promise<UserProfile>;
   register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
-  resendVerificationEmail: () => Promise<void>;
   updateUserProfile: (updates: Partial<UserProfile>) => Promise<void>;
 }
 
@@ -65,65 +51,38 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
-      
-      if (user) {
-        // Fetch user profile from Firestore
-        try {
-          const userDoc = await getDoc(doc(db, 'users', user.uid));
-          if (userDoc.exists()) {
-            setUserProfile(userDoc.data() as UserProfile);
-          } else {
-            // Create user profile if it doesn't exist
-            const newProfile: UserProfile = {
-              uid: user.uid,
-              email: user.email!,
-              displayName: user.displayName || '',
-              firstName: user.displayName?.split(' ')[0] || '',
-              lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
-              preferences: {
-                newsletter: true,
-                smsUpdates: false,
-                whatsappUpdates: true,
-              },
-              createdAt: serverTimestamp(),
-              lastLoginAt: serverTimestamp(),
-              emailVerified: user.emailVerified,
-            };
-            
-            await setDoc(doc(db, 'users', user.uid), newProfile);
-            setUserProfile(newProfile);
-          }
-          
-          // Update last login time
-          await setDoc(doc(db, 'users', user.uid), {
-            lastLoginAt: serverTimestamp(),
-            emailVerified: user.emailVerified,
-          }, { merge: true });
-        } catch (error) {
-          console.error('Error fetching user profile:', error);
-          // Don't throw error, just log it
+    const checkCurrentUser = async () => {
+      try {
+        const customer = await getCurrentCustomer();
+        if (customer) {
+          setUser(customer as UserProfile);
         }
-      } else {
-        setUserProfile(null);
+      } catch (error) {
+        // User not authenticated, which is fine
+        console.log('No authenticated user');
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
-    });
+    };
 
-    return () => unsubscribe();
+    checkCurrentUser();
   }, []);
 
-  const login = async (email: string, password: string): Promise<UserCredential> => {
-    const result = await signInWithEmailAndPassword(auth, email, password);
-    return result;
+  const login = async (email: string, password: string): Promise<UserProfile> => {
+    try {
+      const customer = await loginCustomer(email, password);
+      const userProfile = customer as UserProfile;
+      setUser(userProfile);
+      return userProfile;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
   };
 
   const register = async (
@@ -133,36 +92,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     lastName: string
   ): Promise<void> => {
     try {
-      const result = await createUserWithEmailAndPassword(auth, email, password);
-      
-      // Update user profile
-      await updateProfile(result.user, {
-        displayName: `${firstName} ${lastName}`
+      const customer = await registerCustomer({
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        password,
       });
-
-      // Create user document in Firestore
-      const userProfile: UserProfile = {
-        uid: result.user.uid,
-        email: result.user.email!,
-        displayName: `${firstName} ${lastName}`,
-        firstName,
-        lastName,
-        preferences: {
-          newsletter: true,
-          smsUpdates: false,
-          whatsappUpdates: true,
-        },
-        createdAt: serverTimestamp(),
-        lastLoginAt: serverTimestamp(),
-        emailVerified: result.user.emailVerified,
-      };
-
-      await setDoc(doc(db, 'users', result.user.uid), userProfile);
       
-      // Send email verification
-      await sendEmailVerification(result.user);
-      
-      setUserProfile(userProfile);
+      const userProfile = customer as UserProfile;
+      setUser(userProfile);
     } catch (error) {
       console.error('Registration error:', error);
       throw error;
@@ -171,57 +109,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async (): Promise<void> => {
     try {
-      await signOut(auth);
+      await logoutCustomer();
       setUser(null);
-      setUserProfile(null);
       router.push('/');
     } catch (error) {
+      console.error('Logout error:', error);
       throw error;
     }
   };
 
   const resetPassword = async (email: string): Promise<void> => {
-    await sendPasswordResetEmail(auth, email, {
-      url: `${window.location.origin}/login`,
-      handleCodeInApp: false,
-    });
-  };
-
-  const resendVerificationEmail = async (): Promise<void> => {
-    if (user) {
-      await sendEmailVerification(user, {
-        url: `${window.location.origin}/login`,
-        handleCodeInApp: false,
-      });
-    } else {
-      throw new Error('No user is currently signed in');
-    }
+    // MedusaJS doesn't have built-in password reset, you'd need to implement this
+    // For now, we'll throw an error to indicate it's not implemented
+    throw new Error('Password reset not implemented yet. Please contact support.');
   };
 
   const updateUserProfile = async (updates: Partial<UserProfile>): Promise<void> => {
     if (!user) throw new Error('No user is currently signed in');
     
     try {
-      await setDoc(doc(db, 'users', user.uid), updates, { merge: true });
-      
-      // Update local state
-      if (userProfile) {
-        setUserProfile({ ...userProfile, ...updates });
-      }
+      const updatedCustomer = await updateCustomer(updates);
+      const userProfile = updatedCustomer as UserProfile;
+      setUser(userProfile);
     } catch (error) {
+      console.error('Profile update error:', error);
       throw error;
     }
   };
 
   const value: AuthContextType = {
     user,
-    userProfile,
     loading,
     login,
     register,
     logout,
     resetPassword,
-    resendVerificationEmail,
     updateUserProfile,
   };
 

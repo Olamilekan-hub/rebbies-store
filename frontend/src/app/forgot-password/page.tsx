@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeftIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/context/AuthContext';
-import { FirebaseError } from 'firebase/app';
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -31,21 +30,11 @@ const ForgotPasswordPage: React.FC = () => {
     try {
       await resetPassword(email);
       setSuccess(true);
-    } catch (error) {
-      const firebaseError = error as FirebaseError;
-      
-      switch (firebaseError.code) {
-        case 'auth/invalid-email':
-          setError('Please enter a valid email address.');
-          break;
-        case 'auth/user-not-found':
-          setError('No account found with this email address.');
-          break;
-        case 'auth/too-many-requests':
-          setError('Too many requests. Please try again later.');
-          break;
-        default:
-          setError('An error occurred. Please try again.');
+    } catch (error: any) {
+      if (error.message) {
+        setError(error.message);
+      } else {
+        setError('An error occurred. Please try again.');
       }
     } finally {
       setLoading(false);

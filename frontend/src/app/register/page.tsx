@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { EyeIcon, EyeSlashIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/context/AuthContext';
-import { FirebaseError } from 'firebase/app';
 
 interface PasswordRequirement {
   label: string;
@@ -105,26 +104,13 @@ const RegisterPage: React.FC = () => {
         formData.lastName
       );
       
-      // Redirect to login with success message
-      router.push('/login?message=registration-success');
-    } catch (error) {
-      const firebaseError = error as FirebaseError;
-      
-      switch (firebaseError.code) {
-        case 'auth/email-already-in-use':
-          setError('An account with this email already exists. Please sign in instead.');
-          break;
-        case 'auth/invalid-email':
-          setError('Please enter a valid email address.');
-          break;
-        case 'auth/operation-not-allowed':
-          setError('Email/password accounts are not enabled. Please contact support.');
-          break;
-        case 'auth/weak-password':
-          setError('Password is too weak. Please choose a stronger password.');
-          break;
-        default:
-          setError('An error occurred during registration. Please try again.');
+      // Registration successful, redirect to dashboard or home
+      router.push('/');
+    } catch (error: any) {
+      if (error.message) {
+        setError(error.message);
+      } else {
+        setError('An error occurred during registration. Please try again.');
       }
     } finally {
       setLoading(false);

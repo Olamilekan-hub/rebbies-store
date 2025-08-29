@@ -10,19 +10,26 @@ module.exports = defineConfig({
       storeCors: process.env.STORE_CORS || "https://rebbies-store.vercel.app",
       adminCors: process.env.ADMIN_CORS || "https://darling-bublanina-92fba5.netlify.app,https://rebbies-store.vercel.app",
       authCors: process.env.AUTH_CORS || "https://darling-bublanina-92fba5.netlify.app,https://rebbies-store.vercel.app",
+      cors: {
+        credentials: true,
+        origin: ["https://darling-bublanina-92fba5.netlify.app", "https://rebbies-store.vercel.app"],
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization", "x-medusa-access-token"],
+      },
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
       session: {
         name: "medusa-session",
         resave: false,
-        rolling: false,
-        saveUninitialized: false,
+        rolling: true,
+        saveUninitialized: true,
         proxy: true,
         cookie: {
           sameSite: "none",
-          secure: process.env.NODE_ENV === "production",
-          httpOnly: true,
+          secure: true, // Always true for sameSite: "none"
+          httpOnly: false, // Allow JavaScript access for better mobile compatibility
           maxAge: 24 * 60 * 60 * 1000,
+          domain: undefined, // Let browser handle domain automatically
         },
       },
     }
