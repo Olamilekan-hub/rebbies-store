@@ -7,7 +7,7 @@ module.exports = defineConfig({
     databaseUrl: process.env.DATABASE_URL,
     redisUrl: process.env.REDIS_URL,
     http: {
-      storeCors: process.env.STORE_CORS || "https://rebbies-store.vercel.app",
+      storeCors: process.env.STORE_CORS || "https://rebbies-store.vercel.app,http://localhost:3002",
       adminCors: process.env.ADMIN_CORS || "https://darling-bublanina-92fba5.netlify.app,https://rebbies-store.vercel.app",
       authCors: process.env.AUTH_CORS || "https://darling-bublanina-92fba5.netlify.app,https://rebbies-store.vercel.app",
       cors: {
@@ -55,6 +55,19 @@ module.exports = defineConfig({
     backendUrl: "https://rebbies-store-y5cp.onrender.com",
   },
   modules: [
+    // Authentication Module for customer login/register
+    {
+      resolve: "@medusajs/auth",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/auth-emailpass",
+            id: "emailpass",
+            options: {}
+          }
+        ]
+      }
+    },
     // Payment Module with Nigerian providers
     {
       resolve: "@medusajs/medusa/payment",
