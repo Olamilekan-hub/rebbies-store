@@ -15,7 +15,6 @@ import {
   createShippingProfilesWorkflow,
   createStockLocationsWorkflow,
   createTaxRegionsWorkflow,
-  createUsersWorkflow,
   linkSalesChannelsToApiKeyWorkflow,
   linkSalesChannelsToStockLocationWorkflow,
   updateStoresWorkflow,
@@ -28,7 +27,6 @@ export default async function seedRebbieStoreData({ container }: { container: an
   const fulfillmentModuleService = container.resolve(Modules.FULFILLMENT);
   const salesChannelModuleService = container.resolve(Modules.SALES_CHANNEL);
   const storeModuleService = container.resolve(Modules.STORE);
-  const userModuleService = container.resolve(Modules.USER);
 
   // Nigerian focus with international support
   const countries = ["ng", "us", "gb", "ca", "au", "gh", "za"];
@@ -77,46 +75,6 @@ export default async function seedRebbieStoreData({ container }: { container: an
     },
   });
 
-  logger.info("👤 Creating admin users...");
-  
-  // Check for existing users first
-  const existingUsers = await userModuleService.listUsers();
-  const adminExists = existingUsers.find(user => user.email === "admin@rebbies-store.com");
-  
-  if (adminExists) {
-    logger.info("👤 Admin user already exists, skipping user creation...");
-  } else {
-    await createUsersWorkflow(container).run({
-      input: {
-        users: [
-          {
-            email: "admin@rebbies-store.com",
-            first_name: "Rebbie's Store",
-            last_name: "Admin",
-            role: "admin",
-            metadata: {
-              created_by: "seed_script",
-              account_type: "admin",
-              location: "Lagos, Nigeria",
-            },
-          },
-          {
-            email: "customer@rebbies-store.com",
-            first_name: "Test",
-            last_name: "Customer",
-            role: "member",
-            metadata: {
-              created_by: "seed_script",
-              account_type: "customer",
-              location: "Lagos, Nigeria",
-              phone: "+234-806-577-6378",
-            },
-          },
-        ],
-      },
-    });
-    logger.info("👤 Admin and test customer users created successfully!");
-  }
 
   logger.info("🇳🇬 Creating Nigerian regions...");
   const { result: regionResult } = await createRegionsWorkflow(container).run({
