@@ -12,24 +12,39 @@ module.exports = defineConfig({
       authCors: process.env.AUTH_CORS || "https://darling-bublanina-92fba5.netlify.app,https://rebbies-store.vercel.app",
       cors: {
         credentials: true,
-        origin: ["https://darling-bublanina-92fba5.netlify.app", "https://rebbies-store.vercel.app"],
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization", "x-medusa-access-token"],
+        origin: function (origin, callback) {
+          const allowedOrigins = [
+            "https://darling-bublanina-92fba5.netlify.app",
+            "https://rebbies-store.vercel.app"
+          ];
+          if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+          } else {
+            callback(new Error('Not allowed by CORS'));
+          }
+        },
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+        allowedHeaders: [
+          "Content-Type", 
+          "Authorization", 
+          "x-medusa-access-token",
+          "Cookie",
+          "Set-Cookie"
+        ],
       },
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
       session: {
         name: "medusa-session",
         resave: false,
-        rolling: true,
-        saveUninitialized: true,
+        rolling: false,
+        saveUninitialized: false,
         proxy: true,
         cookie: {
           sameSite: "none",
-          secure: true, // Always true for sameSite: "none"
-          httpOnly: false, // Allow JavaScript access for better mobile compatibility
-          maxAge: 24 * 60 * 60 * 1000,
-          domain: undefined, // Let browser handle domain automatically
+          secure: true,
+          httpOnly: false,
+          maxAge: 30 * 60 * 1000, // 30 minutes
         },
       },
     }
