@@ -1,4 +1,4 @@
-import { ExecArgs } from "@medusajs/framework/types";
+// import { ExecArgs } from "@medusajs/framework/types"; // Deprecated in v2.8.5
 import {
   ContainerRegistrationKeys,
   Modules,
@@ -20,7 +20,7 @@ import {
   updateStoresWorkflow,
 } from "@medusajs/medusa/core-flows";
 
-export default async function seedRebbieStoreData({ container }: ExecArgs) {
+export default async function seedRebbieStoreData({ container }: { container: any }) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER);
   const link = container.resolve(ContainerRegistrationKeys.LINK);
   const query = container.resolve(ContainerRegistrationKeys.QUERY);
