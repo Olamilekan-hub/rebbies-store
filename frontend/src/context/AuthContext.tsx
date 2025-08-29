@@ -27,7 +27,7 @@ export interface UserProfile {
   };
   created_at: string;
   updated_at: string;
-  has_account: boolean;
+  has_account?: boolean;
 }
 
 interface AuthContextType {
@@ -60,7 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const customer = await getCurrentCustomer();
         if (customer) {
-          setUser(customer as UserProfile);
+          setUser(customer as unknown as UserProfile);
         }
       } catch (error) {
         // User not authenticated, which is fine
@@ -76,7 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string): Promise<UserProfile> => {
     try {
       const customer = await loginCustomer(email, password);
-      const userProfile = customer as UserProfile;
+      const userProfile = customer as unknown as UserProfile;
       setUser(userProfile);
       return userProfile;
     } catch (error) {
@@ -99,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         password,
       });
       
-      const userProfile = customer as UserProfile;
+      const userProfile = customer as unknown as UserProfile;
       setUser(userProfile);
     } catch (error) {
       console.error('Registration error:', error);
@@ -129,7 +129,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     try {
       const updatedCustomer = await updateCustomer(updates);
-      const userProfile = updatedCustomer as UserProfile;
+      const userProfile = updatedCustomer as unknown as UserProfile;
       setUser(userProfile);
     } catch (error) {
       console.error('Profile update error:', error);
