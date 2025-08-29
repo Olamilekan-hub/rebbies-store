@@ -10,41 +10,19 @@ module.exports = defineConfig({
       storeCors: process.env.STORE_CORS || "https://rebbies-store.vercel.app,http://localhost:3002",
       adminCors: process.env.ADMIN_CORS || "https://darling-bublanina-92fba5.netlify.app,https://rebbies-store.vercel.app",
       authCors: process.env.AUTH_CORS || "https://darling-bublanina-92fba5.netlify.app,https://rebbies-store.vercel.app",
-      cors: {
-        credentials: true,
-        origin: function (origin, callback) {
-          const allowedOrigins = [
-            "https://darling-bublanina-92fba5.netlify.app",
-            "https://rebbies-store.vercel.app"
-          ];
-          if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-          } else {
-            callback(new Error('Not allowed by CORS'));
-          }
-        },
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-        allowedHeaders: [
-          "Content-Type", 
-          "Authorization", 
-          "x-medusa-access-token",
-          "Cookie",
-          "Set-Cookie"
-        ],
-      },
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
       session: {
-        name: "medusa-session",
+        name: "medusa-session", 
         resave: false,
         rolling: false,
         saveUninitialized: false,
         proxy: true,
         cookie: {
-          sameSite: "none",
-          secure: true,
-          httpOnly: false,
-          maxAge: 30 * 60 * 1000, // 30 minutes
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+          secure: process.env.NODE_ENV === "production",
+          httpOnly: true,
+          maxAge: 24 * 60 * 60 * 1000, // 24 hours
         },
       },
     }
@@ -55,7 +33,7 @@ module.exports = defineConfig({
     backendUrl: "https://rebbies-store-y5cp.onrender.com",
   },
   modules: [
-    // Authentication Module for customer login/register
+    // Authentication Module for customer login/register (v2.8.5 compatible)
     {
       resolve: "@medusajs/auth",
       options: {
@@ -63,11 +41,14 @@ module.exports = defineConfig({
           {
             resolve: "@medusajs/auth-emailpass",
             id: "emailpass",
-            options: {}
+            options: {
+              // Email/password authentication for customers
+            }
           }
         ]
       }
     },
+    
     // Payment Module with Nigerian providers
     {
       resolve: "@medusajs/medusa/payment",
