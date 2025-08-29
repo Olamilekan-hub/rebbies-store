@@ -15,6 +15,7 @@ import {
   createShippingProfilesWorkflow,
   createStockLocationsWorkflow,
   createTaxRegionsWorkflow,
+  createUsersWorkflow,
   linkSalesChannelsToApiKeyWorkflow,
   linkSalesChannelsToStockLocationWorkflow,
   updateStoresWorkflow,
@@ -27,6 +28,7 @@ export default async function seedRebbieStoreData({ container }: { container: an
   const fulfillmentModuleService = container.resolve(Modules.FULFILLMENT);
   const salesChannelModuleService = container.resolve(Modules.SALES_CHANNEL);
   const storeModuleService = container.resolve(Modules.STORE);
+  const userModuleService = container.resolve(Modules.USER);
 
   // Nigerian focus with international support
   const countries = ["ng", "us", "gb", "ca", "au", "gh", "za"];
@@ -74,6 +76,47 @@ export default async function seedRebbieStoreData({ container }: { container: an
       },
     },
   });
+
+  logger.info("👤 Creating admin users...");
+  
+  // Check for existing users first
+  const existingUsers = await userModuleService.listUsers();
+  const adminExists = existingUsers.find(user => user.email === "admin@rebbies-store.com");
+  
+  if (adminExists) {
+    logger.info("👤 Admin user already exists, skipping user creation...");
+  } else {
+    await createUsersWorkflow(container).run({
+      input: {
+        users: [
+          {
+            email: "admin@rebbies-store.com",
+            first_name: "Rebbie's Store",
+            last_name: "Admin",
+            role: "admin",
+            metadata: {
+              created_by: "seed_script",
+              account_type: "admin",
+              location: "Lagos, Nigeria",
+            },
+          },
+          {
+            email: "customer@rebbies-store.com",
+            first_name: "Test",
+            last_name: "Customer",
+            role: "member",
+            metadata: {
+              created_by: "seed_script",
+              account_type: "customer",
+              location: "Lagos, Nigeria",
+              phone: "+234-806-577-6378",
+            },
+          },
+        ],
+      },
+    });
+    logger.info("👤 Admin and test customer users created successfully!");
+  }
 
   logger.info("🇳🇬 Creating Nigerian regions...");
   const { result: regionResult } = await createRegionsWorkflow(container).run({
@@ -325,11 +368,22 @@ export default async function seedRebbieStoreData({ container }: { container: an
   });
 
   logger.info("📦 Creating Rebbie's Store product categories...");
-  const { result: categoryResult } = await createProductCategoriesWorkflow(
-    container
-  ).run({
-    input: {
-      product_categories: [
+  
+  // Check for existing categories first
+  const productModuleService = container.resolve(Modules.PRODUCT);
+  const existingCategories = await productModuleService.listProductCategories();
+  
+  let categoryResult;
+  
+  if (existingCategories.length > 0) {
+    logger.info("📦 Categories already exist, skipping category creation...");
+    categoryResult = existingCategories;
+  } else {
+    const workflowResult = await createProductCategoriesWorkflow(
+      container
+    ).run({
+      input: {
+        product_categories: [
         // === FASHION BAGS (Main Category) ===
         {
           name: "Fashion Bags",
@@ -416,6 +470,8 @@ export default async function seedRebbieStoreData({ container }: { container: an
       ],
     },
   });
+  categoryResult = workflowResult.result;
+  }
 
   // Set up parent-child relationships for categories
   logger.info("🔗 Setting up category relationships...");
@@ -465,7 +521,14 @@ export default async function seedRebbieStoreData({ container }: { container: an
   logger.info("   • Fragrances (Men's + Women's)");
 
   logger.info("💎 Creating Rebbie's Store products...");
-  await createProductsWorkflow(container).run({
+  
+  // Check for existing products first
+  const existingProducts = await productModuleService.listProducts();
+  
+  if (existingProducts.length > 0) {
+    logger.info("💎 Products already exist, skipping product creation...");
+  } else {
+    await createProductsWorkflow(container).run({
     input: {
       products: [
         {
@@ -835,29 +898,39 @@ export default async function seedRebbieStoreData({ container }: { container: an
         },
       ],
     },
-  });
-
-  logger.info("📊 Setting up inventory levels...");
-  const { data: inventoryItems } = await query.graph({
-    entity: "inventory_item",
-    fields: ["id"],
-  });
-
-  const inventoryLevels: any[] = [];
-  for (const inventoryItem of inventoryItems) {
-    const inventoryLevel = {
-      location_id: stockLocation.id,
-      stocked_quantity: 50, 
-      inventory_item_id: inventoryItem.id,
-    };
-    inventoryLevels.push(inventoryLevel);
+    });
   }
 
-  await createInventoryLevelsWorkflow(container).run({
-    input: {
-      inventory_levels: inventoryLevels,
-    },
-  });
+  logger.info("📊 Setting up inventory levels...");
+  
+  // Check for existing inventory levels
+  const inventoryModuleService = container.resolve(Modules.INVENTORY);
+  const existingInventoryLevels = await inventoryModuleService.listInventoryLevels();
+  
+  if (existingInventoryLevels.length > 0) {
+    logger.info("📊 Inventory levels already exist, skipping inventory setup...");
+  } else {
+    const { data: inventoryItems } = await query.graph({
+      entity: "inventory_item",
+      fields: ["id"],
+    });
+
+    const inventoryLevels: any[] = [];
+    for (const inventoryItem of inventoryItems) {
+      const inventoryLevel = {
+        location_id: stockLocation.id,
+        stocked_quantity: 50, 
+        inventory_item_id: inventoryItem.id,
+      };
+      inventoryLevels.push(inventoryLevel);
+    }
+
+    await createInventoryLevelsWorkflow(container).run({
+      input: {
+        inventory_levels: inventoryLevels,
+      },
+    });
+  }
 
   logger.info("🎉 Rebbie's Store data seeding completed!");
   logger.info("💡 Next steps:");
