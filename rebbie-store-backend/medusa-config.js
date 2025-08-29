@@ -12,6 +12,19 @@ module.exports = defineConfig({
       authCors: process.env.AUTH_CORS || "https://darling-bublanina-92fba5.netlify.app,https://rebbies-store.vercel.app",
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
+      session: {
+        name: "medusa-session",
+        resave: false,
+        rolling: false,
+        saveUninitialized: false,
+        proxy: true,
+        cookie: {
+          sameSite: "none",
+          secure: process.env.NODE_ENV === "production",
+          httpOnly: true,
+          maxAge: 24 * 60 * 60 * 1000,
+        },
+      },
     }
   },
   admin: {
