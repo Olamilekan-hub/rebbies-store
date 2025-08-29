@@ -36,6 +36,7 @@ module.exports = defineConfig({
     // Authentication Module for customer login/register (v2.8.5 compatible)
     {
       resolve: "@medusajs/auth",
+      key: "auth",
       options: {
         providers: [
           {
@@ -52,6 +53,7 @@ module.exports = defineConfig({
     // Payment Module with Nigerian providers
     {
       resolve: "@medusajs/medusa/payment",
+      key: "payment",
       options: {
         providers: [
           // System/Manual payment provider (built-in)
