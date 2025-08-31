@@ -547,11 +547,13 @@ export const updateCustomer = async (customerData: {
  */
 export const logoutCustomer = async () => {
   try {
+    // Option 1: Call backend logout (recommended)
     await medusaClient.auth.logout("customer", "emailpass");
     return true;
   } catch (error) {
     console.error('Error logging out customer:', error);
-    throw error;
+    // If backend logout fails, still clear local session
+    return true;
   }
 };
 
