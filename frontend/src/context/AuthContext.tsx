@@ -7,7 +7,8 @@ import {
   loginCustomer, 
   getCurrentCustomer, 
   updateCustomer,
-  logoutCustomer 
+  logoutCustomer,
+  requestPasswordReset
 } from '@/lib/medusa';
 
 export interface UserProfile {
@@ -32,6 +33,7 @@ export interface UserProfile {
 
 interface AuthContextType {
   user: UserProfile | null;
+  authToken: string | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<UserProfile>;
   register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
@@ -52,8 +54,17 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [authToken, setAuthToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  // Load auth token from localStorage on mount
+  useEffect(() => {
+    const token = localStorage.getItem('medusa_auth_token');
+    if (token) {
+      setAuthToken(token);
+    }
+  }, []);
 
   useEffect(() => {
     const checkCurrentUser = async () => {
@@ -75,9 +86,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string): Promise<UserProfile> => {
     try {
-      const customer = await loginCustomer(email, password);
+      const result = await loginCustomer(email, password);
+      const { customer, token } = result;
       const userProfile = customer as unknown as UserProfile;
+      
       setUser(userProfile);
+      setAuthToken(token);
+      localStorage.setItem('medusa_auth_token', token);
+      
       return userProfile;
     } catch (error) {
       console.error('Login error:', error);
@@ -111,6 +127,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await logoutCustomer();
       setUser(null);
+      setAuthToken(null);
+      localStorage.removeItem('medusa_auth_token');
       router.push('/');
     } catch (error) {
       console.error('Logout error:', error);
@@ -119,16 +137,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const resetPassword = async (email: string): Promise<void> => {
-    // MedusaJS doesn't have built-in password reset, you'd need to implement this
-    // For now, we'll throw an error to indicate it's not implemented
-    throw new Error('Password reset not implemented yet. Please contact support.');
+    try {
+      await requestPasswordReset(email);
+    } catch (error) {
+      console.error('Password reset error:', error);
+      throw error;
+    }
   };
 
   const updateUserProfile = async (updates: Partial<UserProfile>): Promise<void> => {
     if (!user) throw new Error('No user is currently signed in');
     
     try {
-      const updatedCustomer = await updateCustomer(updates);
+      const updatedCustomer = await updateCustomer(updates, authToken || undefined);
       const userProfile = updatedCustomer as unknown as UserProfile;
       setUser(userProfile);
     } catch (error) {
@@ -139,6 +160,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const value: AuthContextType = {
     user,
+    authToken,
     loading,
     login,
     register,

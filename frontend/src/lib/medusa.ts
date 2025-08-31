@@ -452,7 +452,7 @@ export const getOrderByCartId = async (cartId: string) => {
 // ===============================
 
 /**
- * Customer registration
+ * Customer registration - Medusa v2 compatible
  */
 export const registerCustomer = async (customerData: {
   first_name: string;
@@ -462,7 +462,19 @@ export const registerCustomer = async (customerData: {
   phone?: string;
 }) => {
   try {
-    const { customer } = await medusaClient.store.customer.create(customerData);
+    // Step 1: Get registration token
+    const { token } = await medusaClient.auth.register("customer", "emailpass", {
+      email: customerData.email,
+      password: customerData.password,
+    });
+
+    // Step 2: Create customer with registration token
+    const { customer } = await medusaClient.store.customer.create(customerData, {
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    });
+
     return customer;
   } catch (error) {
     console.error('Error registering customer:', error);
@@ -471,15 +483,23 @@ export const registerCustomer = async (customerData: {
 };
 
 /**
- * Customer login
+ * Customer login - Medusa v2 compatible
  */
 export const loginCustomer = async (email: string, password: string) => {
   try {
-    const { customer } = await medusaClient.store.auth.authenticate({
+    const { token } = await medusaClient.auth.authenticate("customer", "emailpass", {
       email,
       password,
     });
-    return customer;
+    
+    // Get customer data with the auth token
+    const { customer } = await medusaClient.store.customer.retrieve({
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    });
+    
+    return { customer, token };
   } catch (error) {
     console.error('Error logging in customer:', error);
     throw error;
@@ -500,7 +520,7 @@ export const getCurrentCustomer = async () => {
 };
 
 /**
- * Update customer profile
+ * Update customer profile - Medusa v2 compatible
  */
 export const updateCustomer = async (customerData: {
   first_name?: string;
@@ -509,9 +529,12 @@ export const updateCustomer = async (customerData: {
   phone?: string;
   password?: string;
   metadata?: Record<string, any>;
-}) => {
+}, authToken?: string) => {
   try {
-    const { customer } = await medusaClient.store.customer.update(customerData);
+    const headers = authToken ? { authorization: `Bearer ${authToken}` } : {};
+    const { customer } = await medusaClient.store.customer.update(customerData, {
+      headers,
+    });
     return customer;
   } catch (error) {
     console.error('Error updating customer:', error);
@@ -520,14 +543,48 @@ export const updateCustomer = async (customerData: {
 };
 
 /**
- * Customer logout
+ * Customer logout - Medusa v2 compatible
  */
 export const logoutCustomer = async () => {
   try {
-    await medusaClient.store.auth.deleteSession();
+    await medusaClient.auth.logout("customer", "emailpass");
     return true;
   } catch (error) {
     console.error('Error logging out customer:', error);
+    throw error;
+  }
+};
+
+/**
+ * Request password reset - Medusa v2 compatible
+ */
+export const requestPasswordReset = async (email: string) => {
+  try {
+    await medusaClient.auth.resetPassword("customer", "emailpass", {
+      identifier: email,
+    });
+    return true;
+  } catch (error) {
+    console.error('Error requesting password reset:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update password with reset token - Medusa v2 compatible
+ */
+export const updatePasswordWithToken = async (token: string, newPassword: string) => {
+  try {
+    await medusaClient.auth.updateProvider("customer", "emailpass", {
+      password: newPassword,
+    }, {
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    });
+    return true;
+  } catch (error) {
+    console.error('Error updating password with token:', error);
     throw error;
   }
 };
