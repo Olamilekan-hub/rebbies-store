@@ -68,22 +68,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const checkCurrentUser = async () => {
-      try {
-        const customer = await getCurrentCustomer();
-        if (customer) {
-          setUser(customer as unknown as UserProfile);
+      // Only check for current user if we have an auth token
+      if (authToken) {
+        try {
+          const customer = await getCurrentCustomer();
+          if (customer) {
+            setUser(customer as unknown as UserProfile);
+          }
+        } catch (error) {
+          // Token might be expired, clear it
+          console.log('Error checking current user:', error);
+          setAuthToken(null);
+          localStorage.removeItem('medusa_auth_token');
         }
-        // getCurrentCustomer now returns null for unauthenticated users instead of throwing
-      } catch (error) {
-        // Handle any unexpected errors
-        console.log('Error checking current user:', error);
-      } finally {
-        setLoading(false);
       }
+      setLoading(false);
     };
 
-    checkCurrentUser();
-  }, []);
+    // Only run when authToken state is initialized
+    if (authToken !== null || localStorage.getItem('medusa_auth_token') === null) {
+      checkCurrentUser();
+    }
+  }, [authToken]);
 
   const login = async (email: string, password: string): Promise<UserProfile> => {
     try {

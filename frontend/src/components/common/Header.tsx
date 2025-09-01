@@ -1,24 +1,50 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
   Bars3Icon, 
   XMarkIcon, 
   UserIcon,
-  HeartIcon
+  HeartIcon,
+  ChevronDownIcon,
+  ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline';
 import { CartIcon, MiniCartPreview } from '@/components/cart/CartIcon';
 import clsx from 'clsx';
 import { useAuth } from '@/context/AuthContext'; // ✅ import
 
 export const Header: React.FC = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const isLoggedIn = !!user; 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMiniCartVisible, setIsMiniCartVisible] = useState(false);
+  const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
   const pathname = usePathname();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsAccountDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Get user's first initial for avatar
+  const getUserInitial = () => {
+    if (user?.first_name) {
+      return user.first_name.charAt(0).toUpperCase();
+    }
+    return 'U'; // fallback
+  };
 
   const navigation = [
     { name: 'Home', href: '/', showUnderline: true },
@@ -83,13 +109,46 @@ export const Header: React.FC = () => {
 
               {/* Auth Section */}
               {isLoggedIn ? (
-                <Link 
-                  href="/account"
-                  className="flex items-center gap-2 px-3 py-1 transition-colors rounded-fullhover:bg-neutral-700"
-                >
-                  <UserIcon className="w-4 h-4" />
-                  <span className="text-xs font-medium md:text-sm">Account</span>
-                </Link>
+                <div className="relative" ref={dropdownRef}>
+                  <button 
+                    onClick={() => setIsAccountDropdownOpen(!isAccountDropdownOpen)}
+                    className="flex items-center gap-2 px-3 py-1 transition-colors rounded-full hover:bg-neutral-700"
+                  >
+                    {/* User Avatar */}
+                    <div className="flex items-center justify-center w-6 h-6 text-xs font-semibold text-white rounded-full bg-rebbie-600">
+                      {getUserInitial()}
+                    </div>
+                    <span className="hidden text-xs font-medium md:block md:text-sm">Account</span>
+                    <ChevronDownIcon className={clsx(
+                      "w-3 h-3 transition-transform duration-200",
+                      isAccountDropdownOpen ? "rotate-180" : ""
+                    )} />
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {isAccountDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-neutral-200 py-1 z-50">
+                      <Link 
+                        href="/account"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
+                        onClick={() => setIsAccountDropdownOpen(false)}
+                      >
+                        <UserIcon className="w-4 h-4" />
+                        Profile
+                      </Link>
+                      <button
+                        onClick={async () => {
+                          await logout();
+                          setIsAccountDropdownOpen(false);
+                        }}
+                        className="flex items-center gap-2 w-full px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors text-left"
+                      >
+                        <ArrowRightOnRectangleIcon className="w-4 h-4" />
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <div className="flex items-center hidden gap-2 md:flex">
                   <Link 
@@ -223,14 +282,34 @@ export const Header: React.FC = () => {
               
               <div className="pt-4 space-y-4 border-t border-neutral-200">
                 {isLoggedIn ? (
-                  <Link
-                    href="/account"
-                    className="flex items-center gap-3 py-2 text-neutral-700 hover:text-rebbie-600"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <UserIcon className="w-6 h-6" />
-                    <span>My Account</span>
-                  </Link>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3 py-2 text-neutral-600">
+                      <div className="flex items-center justify-center w-8 h-8 text-sm font-semibold text-white rounded-full bg-rebbie-600">
+                        {getUserInitial()}
+                      </div>
+                      <span className="font-medium">
+                        {user?.first_name} {user?.last_name}
+                      </span>
+                    </div>
+                    <Link
+                      href="/account"
+                      className="flex items-center gap-3 py-2 text-neutral-700 hover:text-rebbie-600"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <UserIcon className="w-6 h-6" />
+                      <span>My Profile</span>
+                    </Link>
+                    <button
+                      onClick={async () => {
+                        await logout();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="flex items-center gap-3 py-2 text-neutral-700 hover:text-rebbie-600 w-full text-left"
+                    >
+                      <ArrowRightOnRectangleIcon className="w-6 h-6" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
                 ) : (
                   <div className="space-y-2">
                     <Link
