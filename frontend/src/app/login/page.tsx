@@ -11,6 +11,7 @@ const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -30,6 +31,13 @@ const LoginForm: React.FC = () => {
     } else if (message === 'registration-success') {
       setSuccess('Registration successful! Please verify your email address.');
     }
+
+    // Load remembered email
+    const rememberedEmail = localStorage.getItem('remembered_email');
+    if (rememberedEmail) {
+      setEmail(rememberedEmail);
+      setRememberMe(true);
+    }
   }, [searchParams]);
 
   useEffect(() => {
@@ -47,6 +55,14 @@ const LoginForm: React.FC = () => {
 
     try {
       await login(email, password);
+      
+      // Handle remember me functionality
+      if (rememberMe) {
+        localStorage.setItem('remembered_email', email);
+      } else {
+        localStorage.removeItem('remembered_email');
+      }
+      
       router.push(redirectTo);
     } catch (error: any) {
       if (error.message) {
@@ -135,6 +151,8 @@ const LoginForm: React.FC = () => {
               id="remember-me"
               name="remember-me"
               type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
               className="w-4 h-5 rounded text-rebbie-600 focus:ring-rebbie-500 border-neutral-300"
             />
             <label htmlFor="remember-me" className="block ml-2 text-sm text-neutral-700">

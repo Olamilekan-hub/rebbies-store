@@ -463,17 +463,20 @@ export const registerCustomer = async (customerData: {
 }) => {
   try {
     // Step 1: Get registration token
-    const { token } = await medusaClient.auth.register("customer", "emailpass", {
+    const registrationResponse = await medusaClient.auth.register("customer", "emailpass", {
       email: customerData.email,
       password: customerData.password,
     });
 
-    // Step 2: Create customer with registration token
-    const { customer } = await medusaClient.store.customer.create(customerData, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    });
+    // Step 2: Create customer with registration token (only basic data, no password)
+    const customerCreateData = {
+      first_name: customerData.first_name,
+      last_name: customerData.last_name,
+      email: customerData.email,
+      phone: customerData.phone,
+    };
+
+    const { customer } = await medusaClient.store.customer.create(customerCreateData);
 
     return customer;
   } catch (error) {
@@ -487,19 +490,15 @@ export const registerCustomer = async (customerData: {
  */
 export const loginCustomer = async (email: string, password: string) => {
   try {
-    const { token } = await medusaClient.auth.authenticate("customer", "emailpass", {
+    const loginResponse = await medusaClient.auth.login("customer", "emailpass", {
       email,
       password,
     });
     
-    // Get customer data with the auth token
-    const { customer } = await medusaClient.store.customer.retrieve({
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    });
+    // Get customer data after successful login
+    const { customer } = await medusaClient.store.customer.retrieve();
     
-    return { customer, token };
+    return { customer, token: loginResponse.token };
   } catch (error) {
     console.error('Error logging in customer:', error);
     throw error;
@@ -513,9 +512,12 @@ export const getCurrentCustomer = async () => {
   try {
     const { customer } = await medusaClient.store.customer.retrieve();
     return customer;
-  } catch (error) {
-    console.error('Error fetching current customer:', error);
-    throw error;
+  } catch (error: any) {
+    // Don't log 401 errors as they're expected when not authenticated
+    if (error.status !== 401 && error.response?.status !== 401) {
+      console.error('Error fetching current customer:', error);
+    }
+    return null;
   }
 };
 
