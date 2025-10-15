@@ -424,7 +424,7 @@ const LegalPage = () => {
                       <ul className="list-disc pl-6 space-y-2">
                         <li>Shopping cart may not work properly</li>
                         <li>You may need to log in repeatedly</li>
-                        <li>Preferences won't be remembered</li>
+                        <li>Preferences won&apos;t be remembered</li>
                         <li>Some features may not function correctly</li>
                         <li>Website performance may be impacted</li>
                       </ul>

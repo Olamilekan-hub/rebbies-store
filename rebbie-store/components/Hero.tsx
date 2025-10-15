@@ -68,7 +68,7 @@ const Hero = () => {
             {/* Badge */}
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
               <IoSparklesSharp className="w-4 h-4 text-pink-300 mr-2" />
-              <span className="text-white text-sm font-medium">Nigeria's Premium Beauty Store</span>
+              <span className="text-white text-sm font-medium">Nigeria&apos;s Premium Beauty Store</span>
             </div>
 
             {/* Main Heading */}
