@@ -1,4 +1,4 @@
-where"use client";
+"use client";
 import { CustomButton } from "@/components";
 import { isValidEmailAddressFormat } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -90,7 +90,7 @@ const ForgotPasswordPage = () => {
   return (
     <div className="min-h-[90vh] flex">
       {/* Left side - Image Gallery */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+      <div className="relative hidden overflow-hidden lg:flex lg:w-1/2">
         <img
           src={marketplaceImages[currentImageIndex]}
           alt="Beautiful marketplace showcase"
@@ -100,14 +100,14 @@ const ForgotPasswordPage = () => {
           }}
         />
         <div className="absolute inset-0 bg-black/30"></div>
-        <div className="absolute bottom-8 left-8 text-white">
+        <div className="absolute text-white bottom-8 left-8">
           <h1 className="text-3xl font-bold text-transparent bg-gradient-to-r from-white via-white/90 to-white/70 bg-clip-text">
             Rebbie Vault
           </h1>
-          <p className="text-white/80 mt-2">Secure password recovery for your account.</p>
+          <p className="mt-2 text-white/80">Secure password recovery for your account.</p>
         </div>
         {/* Image indicators */}
-        <div className="absolute bottom-8 right-8 flex space-x-2">
+        <div className="absolute flex space-x-2 bottom-8 right-8">
           {marketplaceImages.map((_, index) => (
             <div
               key={index}
@@ -120,7 +120,7 @@ const ForgotPasswordPage = () => {
       </div>
 
       {/* Right side - Form */}
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
+      <div className="flex items-center justify-center flex-1 px-4 bg-white sm:px-6 lg:px-8 dark:bg-gray-900">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Forgot Password</h2>
@@ -131,7 +131,7 @@ const ForgotPasswordPage = () => {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                 Email Address
               </label>
               <input
@@ -141,7 +141,7 @@ const ForgotPasswordPage = () => {
                 autoComplete="email"
                 required
                 placeholder="name@example.com"
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                className="w-full px-4 py-3 text-gray-900 placeholder-gray-500 transition-all duration-300 bg-white border border-gray-300 rounded-xl dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
             </div>
 
@@ -177,7 +177,7 @@ const ForgotPasswordPage = () => {
               Remember your password?{" "}
               <a
                 href="/login"
-                className="text-purple-600 dark:text-purple-400 hover:text-purple-500 font-medium transition-colors duration-200"
+                className="font-medium text-purple-600 transition-colors duration-200 dark:text-purple-400 hover:text-purple-500"
               >
                 Sign in here
               </a>
