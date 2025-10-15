@@ -13,7 +13,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { CartIcon, MiniCartPreview } from '@/components/cart/CartIcon';
 import clsx from 'clsx';
-import { useAuth } from '@/context/AuthContext'; // ✅ import
+import { useAuth } from '@/context/AuthContext'; 
 
 export const Header: React.FC = () => {
   const { user, logout } = useAuth();
@@ -112,7 +112,7 @@ export const Header: React.FC = () => {
                 <div className="relative" ref={dropdownRef}>
                   <button 
                     onClick={() => setIsAccountDropdownOpen(!isAccountDropdownOpen)}
-                    className="flex items-center gap-2 px-3 py-1 transition-colors rounded-full hover:bg-neutral-700"
+                    className="flex items-center gap-2 px-3 py-1 transition-colors rounded-full hover:bg-rebbie-300"
                   >
                     {/* User Avatar */}
                     <div className="flex items-center justify-center w-6 h-6 text-xs font-semibold text-white rounded-full bg-rebbie-600">
@@ -127,10 +127,10 @@ export const Header: React.FC = () => {
 
                   {/* Dropdown Menu */}
                   {isAccountDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-neutral-200 py-1 z-50">
+                    <div className="absolute right-0 z-50 w-48 py-1 mt-2 bg-white border rounded-md shadow-lg border-neutral-200">
                       <Link 
                         href="/account"
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 text-sm transition-colors text-neutral-700 hover:bg-neutral-50"
                         onClick={() => setIsAccountDropdownOpen(false)}
                       >
                         <UserIcon className="w-4 h-4" />
@@ -141,7 +141,7 @@ export const Header: React.FC = () => {
                           await logout();
                           setIsAccountDropdownOpen(false);
                         }}
-                        className="flex items-center gap-2 w-full px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors text-left"
+                        className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left transition-colors text-neutral-700 hover:bg-neutral-50"
                       >
                         <ArrowRightOnRectangleIcon className="w-4 h-4" />
                         Logout
@@ -304,7 +304,7 @@ export const Header: React.FC = () => {
                         await logout();
                         setIsMobileMenuOpen(false);
                       }}
-                      className="flex items-center gap-3 py-2 text-neutral-700 hover:text-rebbie-600 w-full text-left"
+                      className="flex items-center w-full gap-3 py-2 text-left text-neutral-700 hover:text-rebbie-600"
                     >
                       <ArrowRightOnRectangleIcon className="w-6 h-6" />
                       <span>Logout</span>

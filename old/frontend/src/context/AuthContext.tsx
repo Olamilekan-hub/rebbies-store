@@ -10,6 +10,7 @@ import {
   logoutCustomer,
   requestPasswordReset
 } from '@/lib/medusa';
+import { handleAuthError } from '@/lib/errorHandler';
 
 export interface UserProfile {
   id: string;
@@ -31,10 +32,18 @@ export interface UserProfile {
   has_account?: boolean;
 }
 
+export interface AuthError {
+  message: string;
+  type: 'error' | 'warning' | 'info';
+  action?: string;
+}
+
 interface AuthContextType {
   user: UserProfile | null;
   authToken: string | null;
   loading: boolean;
+  error: AuthError | null;
+  clearError: () => void;
   login: (email: string, password: string) => Promise<UserProfile>;
   register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -56,6 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<UserProfile | null>(null);
   const [authToken, setAuthToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<AuthError | null>(null);
   const router = useRouter();
 
   // Load auth token from localStorage on mount
@@ -65,6 +75,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setAuthToken(token);
     }
   }, []);
+
+  // Clear error function
+  const clearError = () => {
+    setError(null);
+  };
 
   useEffect(() => {
     const checkCurrentUser = async () => {
@@ -93,6 +108,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string): Promise<UserProfile> => {
     try {
+      setError(null); // Clear any previous errors
       const result = await loginCustomer(email, password);
       const { customer, token } = result;
       const userProfile = customer as unknown as UserProfile;
@@ -102,9 +118,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('medusa_auth_token', token);
       
       return userProfile;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error);
-      throw error;
+      const friendlyError = handleAuthError(error);
+      setError(friendlyError);
+      throw error; // Re-throw for form handling
     }
   };
 
@@ -115,6 +133,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     lastName: string
   ): Promise<void> => {
     try {
+      setError(null); // Clear any previous errors
       const customer = await registerCustomer({
         first_name: firstName,
         last_name: lastName,
@@ -124,9 +143,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       const userProfile = customer as unknown as UserProfile;
       setUser(userProfile);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error);
-      throw error;
+      const friendlyError = handleAuthError(error);
+      setError(friendlyError);
+      throw error; // Re-throw for form handling
     }
   };
 
@@ -145,10 +166,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const resetPassword = async (email: string): Promise<void> => {
     try {
+      setError(null); // Clear any previous errors
       await requestPasswordReset(email);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Password reset error:', error);
-      throw error;
+      const friendlyError = handleAuthError(error);
+      setError(friendlyError);
+      throw error; // Re-throw for form handling
     }
   };
 
@@ -169,6 +193,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     authToken,
     loading,
+    error,
+    clearError,
     login,
     register,
     logout,

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { EyeIcon, EyeSlashIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/context/AuthContext';
+import { ErrorAlert } from '@/components/ui/ErrorAlert';
 
 interface PasswordRequirement {
   label: string;
@@ -32,10 +33,10 @@ const RegisterPage: React.FC = () => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [newsletterOptIn, setNewsletterOptIn] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [localError, setLocalError] = useState('');
   const [passwordStrength, setPasswordStrength] = useState(0);
 
-  const { register, user } = useAuth();
+  const { register, user, error: authError, clearError } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -60,27 +61,27 @@ const RegisterPage: React.FC = () => {
 
   const validateForm = (): boolean => {
     if (!formData.firstName.trim()) {
-      setError('First name is required');
+      setLocalError('First name is required');
       return false;
     }
     if (!formData.lastName.trim()) {
-      setError('Last name is required');
+      setLocalError('Last name is required');
       return false;
     }
     if (!formData.email.trim()) {
-      setError('Email is required');
+      setLocalError('Please enter a valid email address');
       return false;
     }
     if (passwordStrength < 4) {
-      setError('Password does not meet security requirements');
+      setLocalError('Password does not meet security requirements');
       return false;
     }
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setLocalError('Passwords do not match');
       return false;
     }
     if (!agreedToTerms) {
-      setError('You must agree to the Terms of Service and Privacy Policy');
+      setLocalError('You must agree to the Terms of Service and Privacy Policy');
       return false;
     }
     return true;
@@ -88,7 +89,8 @@ const RegisterPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setLocalError('');
+    clearError(); // Clear auth context errors
 
     if (!validateForm()) {
       return;
@@ -107,11 +109,8 @@ const RegisterPage: React.FC = () => {
       // Registration successful, redirect to dashboard or home
       router.push('/');
     } catch (error: any) {
-      if (error.message) {
-        setError(error.message);
-      } else {
-        setError('An error occurred during registration. Please try again.');
-      }
+      // Error is already handled in AuthContext and displayed via authError
+      // Just stop loading
     } finally {
       setLoading(false);
     }
@@ -152,10 +151,24 @@ const RegisterPage: React.FC = () => {
         </div>
 
         {/* Error Message */}
-        {error && (
-          <div className="p-4 border border-red-200 rounded-lg bg-red-50">
-            <p className="text-sm text-red-800">{error}</p>
-          </div>
+        {authError && (
+          <ErrorAlert 
+            message={authError.message}
+            type={authError.type}
+            action={authError.action}
+            onClose={clearError}
+            className="mb-4"
+          />
+        )}
+
+        {/* Local Error Message (fallback) */}
+        {localError && !authError && (
+          <ErrorAlert 
+            message={localError}
+            type="error"
+            onClose={() => setLocalError('')}
+            className="mb-4"
+          />
         )}
 
         {/* Registration Form */}

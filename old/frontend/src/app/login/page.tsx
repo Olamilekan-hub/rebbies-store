@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/context/AuthContext';
+import { ErrorAlert } from '@/components/ui/ErrorAlert';
 
 // Create a separate component for the login form that uses useSearchParams
 const LoginForm: React.FC = () => {
@@ -13,10 +14,10 @@ const LoginForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [localError, setLocalError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const { login, user } = useAuth();
+  const { login, user, error: authError, clearError } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/';
@@ -50,8 +51,9 @@ const LoginForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setLocalError('');
     setSuccess('');
+    clearError(); // Clear auth context errors
 
     try {
       await login(email, password);
@@ -65,11 +67,8 @@ const LoginForm: React.FC = () => {
       
       router.push(redirectTo);
     } catch (error: any) {
-      if (error.message) {
-        setError(error.message);
-      } else {
-        setError('Invalid email or password. Please check your credentials and try again.');
-      }
+      // Error is already handled in AuthContext and displayed via authError
+      // Just stop loading
     } finally {
       setLoading(false);
     }
@@ -85,10 +84,24 @@ const LoginForm: React.FC = () => {
       )}
 
       {/* Error Message */}
-      {error && (
-        <div className="p-4 border border-red-200 rounded-lg bg-red-50">
-          <p className="text-sm text-red-800">{error}</p>
-        </div>
+      {authError && (
+        <ErrorAlert 
+          message={authError.message}
+          type={authError.type}
+          action={authError.action}
+          onClose={clearError}
+          className="mb-4"
+        />
+      )}
+
+      {/* Local Error Message (fallback) */}
+      {localError && !authError && (
+        <ErrorAlert 
+          message={localError}
+          type="error"
+          onClose={() => setLocalError('')}
+          className="mb-4"
+        />
       )}
 
       {/* Login Form */}
@@ -96,7 +109,7 @@ const LoginForm: React.FC = () => {
         <div className="space-y-4">
           {/* Email */}
           <div>
-            <label htmlFor="email" className="block mb-2 text-sm font-medium text-neutral-700">
+            <label htmlFor="email" className="block mb-2 text-sm font-medium text-black">
               Email address
             </label>
             <input
@@ -114,7 +127,7 @@ const LoginForm: React.FC = () => {
 
           {/* Password */}
           <div>
-            <label htmlFor="password" className="block mb-2 text-sm font-medium text-neutral-700">
+            <label htmlFor="password" className="block mb-2 text-sm font-medium text-black">
               Password
             </label>
             <div className="relative">

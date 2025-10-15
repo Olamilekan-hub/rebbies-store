@@ -4,110 +4,139 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Rebbie's Store is a Nigerian e-commerce platform specializing in hair and jewelry products. It's built with a modern tech stack consisting of:
+**Rebbie's Store** is a Nigerian e-commerce platform specializing in **hair and jewelry products**. We switched from a complex MedusaJS setup to a simpler, more maintainable architecture using a modern e-commerce template.
 
-- **Backend**: MedusaJS v2.8.5 (Node.js e-commerce framework)
-- **Frontend**: Next.js 15.3.4 with TypeScript and React 19
-- **Database**: PostgreSQL  
-- **Payments**: Paystack (primary Nigerian payment provider)
-- **Styling**: Tailwind CSS with custom design system
-- **State Management**: React Context (CartContext, AuthContext)
+**Tech Stack:**
+- **Framework**: Next.js 15.5.3 with TypeScript and React 18.3.1
+- **Backend**: Integrated API routes (no separate backend server)
+- **Database**: MySQL with Prisma ORM
+- **Authentication**: NextAuth.js
+- **State Management**: Zustand
+- **Styling**: Tailwind CSS
+- **Payments**: Paystack (to be integrated for Nigerian market)
+
+## Project Goals & Vision
+
+### Phase 1: Foundation Setup ✅
+- [x] Clone and setup e-commerce template
+- [x] Configure MySQL database with Prisma
+- [x] Create admin user and authentication system
+- [x] Seed demo data for testing
+
+### Phase 2: Nigerian Market Customization 🚧
+- [ ] **Design Overhaul**: Update UI/UX for hair and jewelry products
+- [ ] **Paystack Integration**: Add Nigerian payment gateway
+- [ ] **Currency Support**: Implement NGN currency with proper formatting
+- [ ] **Shipping Zones**: Lagos, Nigeria, International shipping calculations
+- [ ] **Product Categories**: Hair products, jewelry, accessories
+- [ ] **Mobile Optimization**: Ensure mobile-first design for Nigerian users
+
+### Phase 3: Business Features 📋
+- [ ] **Product Management**: Hair product variants (length, texture, color)
+- [ ] **Jewelry Catalog**: Size variants, material options
+- [ ] **Inventory Management**: Stock tracking and low-stock alerts
+- [ ] **Order Management**: Nigerian shipping addresses and zones
+- [ ] **Customer Reviews**: Product rating and review system
+- [ ] **Wishlist**: Save favorite products functionality
+
+### Phase 4: Nigerian E-commerce Features 🇳🇬
+- [ ] **Multi-Payment Options**: Cards, bank transfer, USSD via Paystack
+- [ ] **Delivery Options**: Lagos same-day, Nigeria 2-3 days, International
+- [ ] **Free Shipping Thresholds**: ₦50k Lagos, ₦100k Nigeria, ₦200k International
+- [ ] **Customer Support**: WhatsApp integration for support
+- [ ] **SMS Notifications**: Order updates via SMS
 
 ## Development Commands
 
-### Backend (rebbie-store-backend/)
+### Current Setup (Single Codebase)
 ```bash
-npm run dev              # Start development server
+# Frontend development
+npm run dev              # Start Next.js dev server (port 3000)
 npm run build            # Build for production
 npm run start            # Start production server
-npm run migrations:run   # Run database migrations
-npm run seed             # Seed database with test data
+npm run lint             # Run ESLint
 
-# Testing
-npm run test:unit                    # Run unit tests
-npm run test:integration:http        # Run HTTP integration tests  
-npm run test:integration:modules     # Run module integration tests
+# Backend/Database
+cd server && node app.js # Start API server (port 5000)
+npx prisma migrate dev   # Run database migrations
+npx prisma generate      # Generate Prisma client
+cd server/utills && node insertDemoData.js  # Seed database
 ```
 
-### Frontend (frontend/)
-```bash
-npm run dev     # Start development server (usually port 3000)
-npm run build   # Build for production
-npm run start   # Start production server
-npm run lint    # Run ESLint
+## Architecture
+
+### Simplified Architecture Benefits
+- **Single codebase** instead of separate frontend/backend
+- **API routes** in Next.js instead of separate Node.js server
+- **Easier deployment** - single app vs microservices
+- **Faster development** - less complexity, more focus on business logic
+
+### Current Project Structure
+```
+rebbie-store/
+├── app/                     # Next.js 13+ App Router
+│   ├── (dashboard)/         # Admin dashboard pages
+│   ├── api/                 # API endpoints (auth, products, etc.)
+│   ├── (shop)/              # Customer-facing shop pages
+│   └── globals.css          # Global styles
+├── components/              # Reusable UI components
+├── server/                  # Database utilities and API server
+│   ├── prisma/              # Database schema
+│   └── utills/              # Seeding scripts
+├── utils/                   # Helper functions and utilities
+└── store/                   # Zustand state management
 ```
 
-## Architecture & Key Patterns
+## Current Admin Access
+- **Email**: rsvault21@gmail.com
+- **Password**: admin123
+- **Dashboard**: http://localhost:3000/admin
+- **Features**: Product management, user management, orders, categories
 
-### Backend Architecture (MedusaJS)
-- **Modular Structure**: Uses MedusaJS modules for payments, admin, and core commerce functionality
-- **API Routes**: Custom routes in `src/api/` for Nigerian-specific features (currency conversion, payment methods)
-- **Payment Integration**: Configured with Paystack for Nigerian payments, with Flutterwave as secondary option
-- **Webhooks**: Paystack webhook handling for payment confirmations
-- **Scripts**: Database seeding and test order creation utilities
+## Next Steps Prioritization
 
-### Frontend Architecture (Next.js)
-- **App Router**: Uses Next.js 13+ app directory structure
-- **Component Organization**:
-  - `components/auth/`: Authentication and user account components
-  - `components/cart/`: Shopping cart functionality including drawer and floating button
-  - `components/product/`: Product display, filtering, and related components
-  - `components/landing/`: Homepage sections and marketing components
-  - `components/common/`: Shared components like Header, Footer
-  - `components/ui/`: Basic UI components (Button, Card, Input, Toast)
+1. **Immediate (This Session)**:
+   - Design customization for hair/jewelry theme
+   - Update product categories and sample data
+   - Improve admin dashboard UI
 
-### State Management
-- **CartContext**: Centralized cart state with localStorage persistence
-  - Supports NGN/USD/EUR currencies
-  - Nigerian shipping zones (Lagos, Nigeria, International)
-  - Automatic shipping cost calculation with free shipping thresholds
-- **AuthContext**: User authentication state management
-- **Custom Hooks**: `useCart.ts`, `useProducts.ts` for business logic
+2. **Short Term (Next Sessions)**:
+   - Paystack payment integration
+   - NGN currency implementation
+   - Nigerian shipping zones
 
-### MedusaJS Integration
-- **Client Configuration**: `frontend/src/lib/medusa.ts` provides typed API client
-- **Nigerian Focus**: Default currency NGN, Nigerian regions, local payment methods
-- **Key Functions**: Product fetching, cart management, category handling, price formatting
+3. **Medium Term**:
+   - Product variant system for hair/jewelry
+   - Mobile optimization
+   - Customer features (reviews, wishlist)
 
-### TypeScript Types
-- Custom types in `frontend/src/lib/types.ts` 
-- Extends MedusaJS types with Nigerian-specific fields
-- Product variants, cart items, and regional data models
+## Nigerian Market Requirements
 
-## Important Configuration
+### Currency & Pricing
+- Display prices in Nigerian Naira (₦)
+- Store prices in kobo (smallest unit) for precision
+- Support multiple currencies for international customers
 
-### Environment Variables
-**Backend** requires:
-- `DATABASE_URL`: PostgreSQL connection
-- `PAYSTACK_SECRET_KEY`: Paystack payment integration
-- `STORE_CORS`, `ADMIN_CORS`, `AUTH_CORS`: CORS configuration
+### Payment Methods
+- **Primary**: Paystack (Nigerian payment processor)
+- **Methods**: Cards, Bank Transfer, USSD, QR codes
+- **Mobile Money**: Support for popular Nigerian mobile payment options
 
-**Frontend** requires:
-- `NEXT_PUBLIC_MEDUSA_BACKEND_URL`: Backend API URL (default: http://localhost:9000)
-- `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY`: MedusaJS store key
+### Shipping & Delivery
+- **Lagos**: Same day delivery, ₦2,000-5,000
+- **Nigeria**: 2-3 days, ₦5,000-10,000
+- **International**: 7-14 days, ₦15,000+
+- **Free shipping thresholds** based on location
 
-### Regional Settings
-- Primary market: Nigeria (NGN currency)
-- Shipping zones: Lagos (₦2,000), Nigeria (₦5,000), International (₦15,000)
-- Free shipping thresholds: Lagos ₦50,000, Nigeria ₦100,000, International ₦200,000
-
-## Development Workflow
-
-1. **Setup**: Both frontend and backend run independently on different ports
-2. **Database**: Run migrations and seed data before starting development
-3. **Testing**: Backend has comprehensive test suite; use integration tests for API changes
-4. **Payments**: Test mode Paystack keys for development; webhook testing available
-
-## Nigerian E-commerce Considerations
-
-- **Currency**: Prices stored in kobo (smallest NGN unit), display formatting handles conversion
-- **Payment Methods**: Paystack integration supports cards, bank transfers, USSD
-- **Shipping**: Zone-based shipping with Lagos express delivery options
-- **Mobile-First**: Nigerian users primarily mobile, ensure responsive design
+### Customer Behavior
+- **Mobile-first**: 80%+ of Nigerian users shop on mobile
+- **WhatsApp**: Preferred customer support channel
+- **Trust signals**: Reviews, testimonials, social proof important
 
 ## Key Files to Understand
 
-- `rebbie-store-backend/medusa-config.ts`: Core backend configuration
-- `frontend/src/lib/medusa.ts`: API client and business logic
-- `frontend/src/context/CartContext.tsx`: Cart state management
-- `frontend/src/lib/types.ts`: TypeScript type definitions
+- `app/api/`: API endpoints for backend functionality
+- `server/prisma/schema.prisma`: Database schema definition
+- `components/`: Reusable UI components
+- `utils/db.ts`: Database connection and utilities
+- `store/`: Zustand state management stores

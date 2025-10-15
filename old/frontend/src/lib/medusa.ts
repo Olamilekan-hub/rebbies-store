@@ -4,6 +4,7 @@
  */
 
 import Medusa from "@medusajs/js-sdk";
+import { handleAuthError, getUserFriendlyMessage } from "./errorHandler";
 
 // Initialize MedusaJS client
 const medusaClient = new Medusa({
@@ -481,7 +482,11 @@ export const registerCustomer = async (customerData: {
     return customer;
   } catch (error) {
     console.error('Error registering customer:', error);
-    throw error;
+    const friendlyError = handleAuthError(error);
+    const errorToThrow = new Error(friendlyError.message);
+    (errorToThrow as any).type = friendlyError.type;
+    (errorToThrow as any).action = friendlyError.action;
+    throw errorToThrow;
   }
 };
 
@@ -501,7 +506,11 @@ export const loginCustomer = async (email: string, password: string) => {
     return { customer, token: loginResponse.token };
   } catch (error) {
     console.error('Error logging in customer:', error);
-    throw error;
+    const friendlyError = handleAuthError(error);
+    const errorToThrow = new Error(friendlyError.message);
+    (errorToThrow as any).type = friendlyError.type;
+    (errorToThrow as any).action = friendlyError.action;
+    throw errorToThrow;
   }
 };
 
@@ -570,7 +579,11 @@ export const requestPasswordReset = async (email: string) => {
     return true;
   } catch (error) {
     console.error('Error requesting password reset:', error);
-    throw error;
+    const friendlyError = handleAuthError(error);
+    const errorToThrow = new Error(friendlyError.message);
+    (errorToThrow as any).type = friendlyError.type;
+    (errorToThrow as any).action = friendlyError.action;
+    throw errorToThrow;
   }
 };
 
