@@ -4,15 +4,19 @@ import { categoryMenuList } from '@/lib/utils';
 
 // Mock Next.js components
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => {
+  const MockedLink = ({ children, href, ...props }: any) => {
     return <a href={href} {...props}>{children}</a>;
   };
+  MockedLink.displayName = 'MockedLink';
+  return MockedLink;
 });
 
 jest.mock('next/image', () => {
-  return ({ src, alt, ...props }: any) => {
+  const MockedImage = ({ src, alt, ...props }: any) => {
     return <img src={src} alt={alt} {...props} />;
   };
+  MockedImage.displayName = 'MockedImage';
+  return MockedImage;
 });
 
 describe('CategoryMenu', () => {

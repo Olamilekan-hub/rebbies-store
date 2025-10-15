@@ -239,10 +239,8 @@ const LoginPage = () => {
               <FcGoogle className="w-5 h-5" />
               <span className="font-medium">Google</span>
             </button>
-          </div>
-
-          <p className="text-center text-gray-600 dark:text-gray-400">
-            Don't have an account?{" "}
+          </div>          <p className="text-center text-gray-600 dark:text-gray-400">
+            Don&apos;t have an account?{" "}
             <a href="/register" className="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500">
               Sign up
             </a>

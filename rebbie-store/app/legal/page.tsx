@@ -95,11 +95,11 @@ const LegalPage = () => {
                         Information We Collect
                       </h3>
                       <p className="mb-4">
-                        At Rebbie's Store, we collect information to provide better services to our customers. We collect:
+                        At Rebbie&apos;s Store, we collect information to provide better services to our customers. We collect:
                       </p>
                       <ul className="list-disc pl-6 space-y-2">
                         <li><strong>Personal Information:</strong> Name, email address, phone number, shipping address</li>
-                        <li><strong>Payment Information:</strong> Processed securely through Paystack (we don't store card details)</li>
+                        <li><strong>Payment Information:</strong> Processed securely through Paystack (we don&apos;t store card details)</li>
                         <li><strong>Order Information:</strong> Purchase history, preferences, and order tracking data</li>
                         <li><strong>Technical Information:</strong> IP address, browser type, device information for security and analytics</li>
                       </ul>
@@ -189,7 +189,7 @@ const LegalPage = () => {
                         Acceptance of Terms
                       </h3>
                       <p>
-                        By accessing and using Rebbie's Store, you accept and agree to be bound by these Terms of Service.
+                        By accessing and using Rebbie&apos;s Store, you accept and agree to be bound by these Terms of Service.
                         If you do not agree to these terms, please do not use our services.
                       </p>
                     </section>
@@ -266,7 +266,7 @@ const LegalPage = () => {
                         Limitation of Liability
                       </h3>
                       <p>
-                        Rebbie's Store shall not be liable for any indirect, incidental, special, or consequential damages.
+                        Rebbie&apos;s Store shall not be liable for any indirect, incidental, special, or consequential damages.
                         Our total liability is limited to the amount you paid for the product in question.
                       </p>
                     </section>
@@ -390,7 +390,7 @@ const LegalPage = () => {
                         <div>
                           <h4 className="font-semibold text-gray-900 dark:text-white">Cookie Consent Banner</h4>
                           <p>
-                            When you first visit our site, you'll see a cookie consent banner where you can:
+                            When you first visit our site, you&apos;ll see a cookie consent banner where you can:
                           </p>
                           <ul className="list-disc pl-6 mt-2 space-y-1">
                             <li>Accept all cookies</li>
@@ -436,7 +436,7 @@ const LegalPage = () => {
                       </h3>
                       <p>
                         We may update this Cookie Policy periodically. Changes will be posted on this page with an
-                        updated "Last Modified" date. Continued use of our website after changes constitutes acceptance
+                        updated &quot;Last Modified&quot; date. Continued use of our website after changes constitutes acceptance
                         of the updated policy.
                       </p>
                     </section>

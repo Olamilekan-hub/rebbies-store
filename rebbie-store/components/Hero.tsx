@@ -213,7 +213,7 @@ const Hero = () => {
                     </div>
                   </div>
                 </div>
-                <p className="text-xs text-gray-600">"Amazing quality! My skin has never looked better. Rebbie's Store is now my go-to!"</p>
+                <p className="text-xs text-gray-600">&quot;Amazing quality! My skin has never looked better. Rebbie&apos;s Store is now my go-to!&quot;</p>
               </div>
             </div>
           </div>

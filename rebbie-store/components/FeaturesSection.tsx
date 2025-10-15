@@ -37,10 +37,10 @@ const FeaturesSection = () => {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            Why Choose <span className="bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">Rebbie's Store</span>
+            Why Choose <span className="bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">Rebbie&apos;s Store</span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            We're committed to bringing you the finest beauty products with exceptional service.
+            We&apos;re committed to bringing you the finest beauty products with exceptional service.
             Your glow is our passion, your satisfaction is our promise.
           </p>
         </div>
@@ -80,7 +80,7 @@ const FeaturesSection = () => {
         <div className="text-center mt-16">
           <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
             <IoSparklesSharp className="w-5 h-5 mr-2" />
-            Experience the Rebbie's Difference
+            Experience the Rebbie&apos;s Difference
           </div>
         </div>
       </div>

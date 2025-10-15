@@ -182,7 +182,7 @@ const CookieConsent = () => {
                       We use cookies to enhance your experience
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                      We use essential cookies to make our site work. We'd also like to set optional cookies
+                      We use essential cookies to make our site work. We&apos;d also like to set optional cookies
                       to help us improve our website and show you relevant content. You can choose which
                       cookies to accept below, or{' '}
                       <Link

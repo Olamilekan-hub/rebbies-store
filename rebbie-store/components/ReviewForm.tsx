@@ -157,10 +157,8 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
         className="w-full px-6 py-3 font-semibold text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-pink-500 to-purple-600 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isSubmitting ? 'Submitting...' : 'Submit Review'}
-      </button>
-
-      <p className="mt-3 text-xs text-center text-gray-500 dark:text-gray-400">
-        Your review will be verified if you've purchased this product
+      </button>      <p className="mt-3 text-xs text-center text-gray-500 dark:text-gray-400">
+        Your review will be verified if you&apos;ve purchased this product
       </p>
     </form>
   );

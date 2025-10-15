@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { IoStarSharp, 
   // IoQuoteOutline
  } from "react-icons/io5";
@@ -66,7 +67,7 @@ const TestimonialsSection = () => {
             What Our <span className="text-transparent bg-gradient-to-r from-pink-300 to-purple-300 bg-clip-text">Beautiful</span> Customers Say
           </h2>
           <p className="max-w-3xl mx-auto text-xl text-purple-100">
-            Join thousands of satisfied customers who've transformed their beauty routine with Rebbie's Store
+            Join thousands of satisfied customers who&apos;ve transformed their beauty routine with Rebbie&apos;s Store
           </p>
         </div>
 
@@ -93,7 +94,7 @@ const TestimonialsSection = () => {
 
               {/* Review Text */}
               <blockquote className="mb-8 text-xl italic font-light leading-relaxed text-white md:text-2xl">
-                "{testimonials[currentTestimonial].review}"
+                &quot;{testimonials[currentTestimonial].review}&quot;
               </blockquote>
 
               {/* Customer Info */}
@@ -155,13 +156,13 @@ const TestimonialsSection = () => {
 
         {/* CTA */}
         <div className="mt-16 text-center">
-          <a
+          <Link
             href="/shop"
             className="inline-flex items-center px-8 py-4 font-semibold text-white transition-all duration-300 shadow-lg bg-gradient-to-r from-pink-500 to-purple-600 rounded-2xl hover:shadow-xl hover:scale-105"
           >
             Join Our Happy Customers
             <IoStarSharp className="w-5 h-5 ml-2" />
-          </a>
+          </Link>
         </div>
       </div>
     </section>

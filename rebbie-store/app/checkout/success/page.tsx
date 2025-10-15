@@ -111,7 +111,7 @@ const CheckoutSuccess = () => {
             Payment Successful!
           </h1>
           <p className="text-purple-100">
-            Thank you for your purchase from Rebbie's Store
+            Thank you for your purchase from Rebbie&apos;s Store
           </p>
         </div>
 
