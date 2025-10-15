@@ -125,7 +125,7 @@ const ForgotPasswordPage = () => {
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Forgot Password</h2>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
-              Enter your email address and we'll send you instructions to reset your password
+              Enter your email address and we&apos;ll send you instructions to reset your password
             </p>
           </div>
 
