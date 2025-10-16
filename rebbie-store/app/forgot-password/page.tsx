@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { TbLoader3 } from "react-icons/tb";
 import ErrorDisplay from "@/components/auth/ErrorDisplay";
+import Link from "next/link";
 
 const ForgotPasswordPage = () => {
   const router = useRouter();
@@ -175,12 +176,12 @@ const ForgotPasswordPage = () => {
           <div className="text-center">
             <p className="text-gray-600 dark:text-gray-400">
               Remember your password?{" "}
-              <a
+              <Link
                 href="/login"
                 className="font-medium text-purple-600 transition-colors duration-200 dark:text-purple-400 hover:text-purple-500"
               >
                 Sign in here
-              </a>
+              </Link>
             </p>
           </div>
         </div>

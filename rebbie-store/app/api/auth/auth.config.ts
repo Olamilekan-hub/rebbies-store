@@ -1,4 +1,4 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import { Account, User as AuthUser } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -7,8 +7,7 @@ import bcrypt from "bcryptjs";
 import prisma from "@/utils/db";
 import { nanoid } from "nanoid";
 
-const authOptions: NextAuthOptions = {
-  // Configure one or more authentication providers
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       id: "credentials",
@@ -59,10 +58,8 @@ const authOptions: NextAuthOptions = {
         return true;
       }
       
-      // Handle OAuth providers
       if (account?.provider === "github" || account?.provider === "google") {
         try {
-          // Check if user exists in database
           const existingUser = await prisma.user.findFirst({
             where: {
               email: user.email!,
@@ -70,13 +67,11 @@ const authOptions: NextAuthOptions = {
           });
 
           if (!existingUser) {
-            // Create new user for OAuth providers
             await prisma.user.create({
               data: {
                 id: nanoid(),
                 email: user.email!,
                 role: "user",
-                // OAuth users don't have passwords
                 password: null,
               },
             });
@@ -94,16 +89,14 @@ const authOptions: NextAuthOptions = {
       if (user) {
         token.role = user.role;
         token.id = user.id;
-        token.iat = Math.floor(Date.now() / 1000); // Issued at time
+        token.iat = Math.floor(Date.now() / 1000);
       }
       
-      // Check if token is expired (15 minutes)
       const now = Math.floor(Date.now() / 1000);
       const tokenAge = now - (token.iat as number);
-      const maxAge = 15 * 60; // 15 minutes
+      const maxAge = 15 * 60;
       
       if (tokenAge > maxAge) {
-        // Token expired, return empty object to force re-authentication
         return {};
       }
       
@@ -119,22 +112,16 @@ const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: '/login',
-    error: '/login', // Redirect to login page on auth errors
+    error: '/login',
   },
   session: {
     strategy: "jwt",
-    maxAge: 15 * 60, // 15 minutes in seconds
-    updateAge: 5 * 60, // Update session every 5 minutes
+    maxAge: 15 * 60,
+    updateAge: 5 * 60,
   },
   jwt: {
-    maxAge: 15 * 60, // 15 minutes in seconds
+    maxAge: 15 * 60,
   },
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
 };
-
-const handler = NextAuth(authOptions);
-
-export const GET = handler;
-export const POST = handler;
-export { authOptions };
