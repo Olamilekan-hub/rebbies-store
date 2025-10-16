@@ -1,13 +1,14 @@
-import { NextAuthOptions } from "next-auth";
-import { Account, User as AuthUser } from "next-auth";
+import type { NextAuthConfig } from "next-auth";
+import type { JWT } from "next-auth/jwt";
 import GithubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import type { Session } from "next-auth";
 import bcrypt from "bcryptjs";
 import prisma from "@/utils/db";
 import { nanoid } from "nanoid";
 
-export const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthConfig = {
   providers: [
     CredentialsProvider({
       id: "credentials",
@@ -42,18 +43,9 @@ export const authOptions: NextAuthOptions = {
         return null;
       },
     }),
-    // Uncomment and configure these providers as needed
-    // GithubProvider({
-    //   clientId: process.env.GITHUB_ID!,
-    //   clientSecret: process.env.GITHUB_SECRET!,
-    // }),
-    // GoogleProvider({
-    //   clientId: process.env.GOOGLE_CLIENT_ID!,
-    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    // }),
   ],
   callbacks: {
-    async signIn({ user, account }: { user: AuthUser; account: Account }) {
+    async signIn({ user, account }) {
       if (account?.provider === "credentials") {
         return true;
       }
@@ -85,7 +77,7 @@ export const authOptions: NextAuthOptions = {
       
       return true;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: JWT, user: any }) {
       if (user) {
         token.role = user.role;
         token.id = user.id;
@@ -102,7 +94,7 @@ export const authOptions: NextAuthOptions = {
       
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: Session, token: JWT }) {
       if (token) {
         session.user.role = token.role as string;
         session.user.id = token.id as string;
