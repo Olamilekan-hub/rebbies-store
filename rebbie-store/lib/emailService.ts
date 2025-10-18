@@ -34,7 +34,7 @@ class EmailService {
       pass: process.env.SMTP_PASS || '',
     };
 
-    return nodemailer.createTransporter({
+    return nodemailer.createTransport({
       host: emailConfig.host,
       port: emailConfig.port,
       secure: emailConfig.secure,

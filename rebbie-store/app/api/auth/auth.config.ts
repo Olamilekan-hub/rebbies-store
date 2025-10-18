@@ -1,14 +1,11 @@
-import type { NextAuthConfig } from "next-auth";
-import type { JWT } from "next-auth/jwt";
 import GithubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import type { Session } from "next-auth";
 import bcrypt from "bcryptjs";
 import prisma from "@/utils/db";
 import { nanoid } from "nanoid";
 
-export const authOptions: NextAuthConfig = {
+export const authOptions = {
   providers: [
     CredentialsProvider({
       id: "credentials",
@@ -45,7 +42,7 @@ export const authOptions: NextAuthConfig = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user, account }: { user: any; account: any }) {
       if (account?.provider === "credentials") {
         return true;
       }
@@ -77,7 +74,7 @@ export const authOptions: NextAuthConfig = {
       
       return true;
     },
-    async jwt({ token, user }: { token: JWT, user: any }) {
+    async jwt({ token, user }: { token: any, user: any }) {
       if (user) {
         token.role = user.role;
         token.id = user.id;
@@ -94,7 +91,7 @@ export const authOptions: NextAuthConfig = {
       
       return token;
     },
-    async session({ session, token }: { session: Session, token: JWT }) {
+    async session({ session, token }: { session: any, token: any }) {
       if (token) {
         session.user.role = token.role as string;
         session.user.id = token.id as string;
@@ -105,9 +102,8 @@ export const authOptions: NextAuthConfig = {
   pages: {
     signIn: '/login',
     error: '/login',
-  },
-  session: {
-    strategy: "jwt",
+  },  session: {
+    strategy: "jwt" as const,
     maxAge: 15 * 60,
     updateAge: 5 * 60,
   },
