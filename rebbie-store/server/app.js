@@ -66,6 +66,7 @@ const allowedOrigins = [
   'http://localhost:3001',
   process.env.NEXTAUTH_URL,
   process.env.FRONTEND_URL,
+  'https://rebbie-store-7j9y.vercel.app', // Add your Vercel URL
 ].filter(Boolean); // Remove undefined values
 
 // CORS configuration with origin validation
@@ -76,6 +77,11 @@ const corsOptions = {
     
 
     if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // Allow any Vercel deployment URL in production
+    if (process.env.NODE_ENV === 'production' && origin && origin.includes('.vercel.app')) {
       return callback(null, true);
     }
     
