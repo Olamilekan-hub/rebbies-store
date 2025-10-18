@@ -2,10 +2,10 @@
   "name": "razvoj_veb_aplikacija",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
+  "main": "index.js",  "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
+    "deploy:postgres": "node deploy-postgres.js",
     "logs": "node view-logs.js",
     "logs:access": "node view-logs.js access",
     "logs:error": "node view-logs.js error",
