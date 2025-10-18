@@ -28,8 +28,7 @@ const DashboardCategory = () => {
           <h1 className="text-3xl font-bold text-purple-600 dark:text-purple-400 text-center mb-6">
             All Categories
           </h1>
-          <div className="flex justify-end mb-6">
-            <Link href="/admin/categories/new">
+          <div className="flex justify-end mb-6">            <Link href="/admin/categories/new">
               <CustomButton
                 buttonType="button"
                 customWidth="180px"
@@ -37,9 +36,8 @@ const DashboardCategory = () => {
                 paddingY={3}
                 textSize="base"
                 text="Add New Category"
-                backgroundColor="bg-purple-600"
-                textColor="text-white"
-                className="hover:bg-purple-700 transition-colors duration-200"
+                variant="primary"
+                className="bg-purple-600 hover:bg-purple-700 transition-colors duration-200"
               />
             </Link>
           </div>

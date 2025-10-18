@@ -25,8 +25,7 @@ const DashboardUsers = () => {
       <div className="flex-1 p-6">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
           <h1 className="text-3xl font-bold text-purple-600 dark:text-purple-400 text-center mb-6">All Users</h1>
-          <div className="flex justify-end mb-6">
-            <Link href="/admin/users/new">
+          <div className="flex justify-end mb-6">            <Link href="/admin/users/new">
               <CustomButton
                 buttonType="button"
                 customWidth="150px"
@@ -34,9 +33,8 @@ const DashboardUsers = () => {
                 paddingY={3}
                 textSize="base"
                 text="Add New User"
-                backgroundColor="bg-purple-600"
-                textColor="text-white"
-                className="hover:bg-purple-700 transition-colors duration-200"
+                variant="primary"
+                className="bg-purple-600 hover:bg-purple-700 transition-colors duration-200"
               />
             </Link>
           </div>

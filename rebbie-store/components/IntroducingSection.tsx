@@ -16,15 +16,13 @@ const IntroducingSection = () => {
           <p className="text-gray-600 dark:text-gray-400 text-center text-xl max-md:text-lg max-[480px]:text-base">
             Discover luxurious hair products, stunning jewelry, and beauty accessories.
           </p>
-          <div className="mt-6 flex justify-center">
-            <CustomButton
+          <div className="mt-6 flex justify-center">            <CustomButton
               text="EXPLORE COLLECTION"
-              textColor="text-white"
-              backgroundColor="bg-purple-600"
+              variant="primary"
               paddingX={12}
               paddingY={4}
               textSize="xl"
-              className="font-bold hover:bg-purple-700 transition-colors duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="font-bold bg-purple-600 hover:bg-purple-700 transition-colors duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             />
           </div>
         </div>
