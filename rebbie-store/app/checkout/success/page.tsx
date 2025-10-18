@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FaCheckCircle, FaSpinner, FaExclamationTriangle } from 'react-icons/fa';
@@ -16,7 +16,7 @@ interface PaymentData {
   paid_at: string;
 }
 
-const CheckoutSuccess = () => {
+const CheckoutSuccessContent = () => {
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -187,6 +187,18 @@ const CheckoutSuccess = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const CheckoutSuccess = () => {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+      </div>
+    }>
+      <CheckoutSuccessContent />
+    </Suspense>
   );
 };
 
