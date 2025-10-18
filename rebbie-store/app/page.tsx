@@ -1,24 +1,24 @@
 import { CategoryMenu, Hero, Incentives, Newsletter } from "@/components";
+import Link from "next/link";
 
 export default function Home() {
   return (
     <div className="min-h-screen">
       <div className="bg-gradient-to-br from-purple-600 to-blue-600 text-white text-center py-20">
-        <h1 className="text-5xl font-bold mb-4">Welcome to Rebbie's Store</h1>
+        <h1 className="text-5xl font-bold mb-4">Welcome to Rebbie&apos;s Store</h1>
         <p className="text-xl mb-8">Your Premier E-Commerce Destination</p>
         <div className="space-x-4">
-          <a 
+          <Link 
             href="/shop" 
             className="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 inline-block"
           >
             Shop Now
-          </a>
-          <a 
+          </Link>
+          <Link 
             href="/test-connection" 
-            className="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 inline-block"
-          >
+            className="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 inline-block"          >
             Test Connection
-          </a>
+          </Link>
         </div>
       </div>
       
