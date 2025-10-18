@@ -22,7 +22,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession();
+  let session = null;
+  try {
+    session = await getServerSession();
+  } catch (error) {
+    console.log("Session fetch failed during build:", error);
+  }
+  
   return (
     <html lang="en" data-theme="light">
       <body className={`${inter.className}`}>
