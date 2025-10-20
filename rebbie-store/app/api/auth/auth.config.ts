@@ -1,8 +1,6 @@
 import GithubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import bcrypt from "bcryptjs";
-import prisma from "@/utils/db";
 import { nanoid } from "nanoid";
 
 export const authOptions = {
@@ -16,28 +14,32 @@ export const authOptions = {
       },
       async authorize(credentials: any) {
         try {
-          const user = await prisma.user.findFirst({
-            where: {
-              email: credentials.email,
+          // Call your backend API for authentication
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
             },
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
           });
-          if (user) {
-            const isPasswordCorrect = await bcrypt.compare(
-              credentials.password,
-              user.password!
-            );
-            if (isPasswordCorrect) {
-              return {
-                id: user.id,
-                email: user.email,
-                role: user.role,
-              };
-            }
+
+          if (response.ok) {
+            const user = await response.json();
+            return {
+              id: user.id,
+              email: user.email,
+              role: user.role,
+            };
+          } else {
+            return null;
           }
         } catch (err: any) {
-          throw new Error(err);
+          console.error('Authentication error:', err);
+          throw new Error('Authentication failed');
         }
-        return null;
       },
     }),
   ],
