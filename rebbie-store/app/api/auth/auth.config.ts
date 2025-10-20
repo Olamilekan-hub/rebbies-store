@@ -48,24 +48,34 @@ export const authOptions = {
       if (account?.provider === "credentials") {
         return true;
       }
-      
-      if (account?.provider === "github" || account?.provider === "google") {
+        if (account?.provider === "github" || account?.provider === "google") {
         try {
-          const existingUser = await prisma.user.findFirst({
-            where: {
-              email: user.email!,
+          // Check if user exists via backend API
+          const checkResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/email/${user.email}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
             },
           });
 
-          if (!existingUser) {
-            await prisma.user.create({
-              data: {
-                id: nanoid(),
+          if (!checkResponse.ok && checkResponse.status === 404) {
+            // User doesn't exist, create new user via backend API
+            const createResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
                 email: user.email!,
                 role: "user",
-                password: null,
-              },
+                password: nanoid(), // Generate a random password for OAuth users
+              }),
             });
+
+            if (!createResponse.ok) {
+              console.error("Failed to create OAuth user:", await createResponse.text());
+              return false;
+            }
           }
           return true;
         } catch (error) {
