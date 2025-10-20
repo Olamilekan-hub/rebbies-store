@@ -1,3 +1,5 @@
+'use client';
+
 import { CategoryMenu, Hero, Incentives, Newsletter } from "@/components";
 import FeaturesSection from "@/components/FeaturesSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
